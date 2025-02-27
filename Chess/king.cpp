@@ -1,6 +1,6 @@
 #include "king.h"
 
-King King::createPawn(Color color)
+King King::createKing(Color color)
 {
 	return King{ 'K', color, Type::king };
 }

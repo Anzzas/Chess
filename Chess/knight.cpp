@@ -1,6 +1,6 @@
 #include "knight.h"
 
-Knight Knight::createPawn(Color color)
+Knight Knight::createKnight(Color color)
 {
 	return Knight{ 'N', color, Type::knight };
 }

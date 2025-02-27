@@ -36,7 +36,7 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const Color& color);
 	friend std::ostream& operator<< (std::ostream& out, const Piece& piece);
-	bool operator== (const Piece& piece) const;
+	bool isSameColor(const Piece& piece) const ;
 
 protected:
 

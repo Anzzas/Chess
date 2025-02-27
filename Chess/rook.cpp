@@ -1,6 +1,6 @@
 #include "rook.h"
 
-Rook Rook::createPawn(Color color)
+Rook Rook::createRook(Color color)
 {
 	return Rook{ 'R', color, Type::rook };
 }

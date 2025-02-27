@@ -6,7 +6,7 @@ class Knight : public Piece
 {
 public:
 
-	static Knight createPawn(Color color);
+	static Knight createKnight(Color color);
 	void move() const override;
 
 private:

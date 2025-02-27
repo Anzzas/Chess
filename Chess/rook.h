@@ -6,7 +6,7 @@ class Rook : public Piece
 {
 public:
 
-	static Rook createPawn(Color color);
+	static Rook createRook(Color color);
 	void move() const override;
 
 private:

@@ -5,8 +5,14 @@
 #include "rook.h"
 #include "queen.h"
 #include "king.h"
+#include "case.h"
 
 int main()
 {
-	std::cout << Bishop::(Piece::white) << "\n";
+	Case c{};
+
+	c.setPiece(Pawn::createPawn(Piece::black));
+
+
+	std::cout << c << "\n";
 }

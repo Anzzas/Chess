@@ -1,6 +1,6 @@
 #include "queen.h"
 
-Queen Queen::createPawn(Color color)
+Queen Queen::createQueen(Color color)
 {
 	return Queen{ 'Q', color, Type::queen };
 }

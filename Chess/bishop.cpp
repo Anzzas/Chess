@@ -1,6 +1,6 @@
 #include "bishop.h"
 
-Bishop Bishop::createPawn(Color color)
+Bishop Bishop::createBishop(Color color)
 {
 	return Bishop{ 'B', color, Type::bishop };
 }

@@ -6,7 +6,7 @@ class Bishop : public Piece
 {
 public:
 
-	static Bishop createPawn(Color color);
+	static Bishop createBishop(Color color);
 	void move() const override;
 
 private:
