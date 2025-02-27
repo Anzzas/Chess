@@ -1,8 +1,12 @@
 #include <iostream>
 #include "pawn.h"
+#include "bishop.h"
+#include "knight.h"
+#include "rook.h"
+#include "queen.h"
+#include "king.h"
 
 int main()
 {
-	Pawn pawn{Pawn::createPawn(Piece::black)};
-	Piece* pawn2{ new Pawn {Pawn::createPawn(Piece::black)} };
+	std::cout << Bishop::(Piece::white) << "\n";
 }

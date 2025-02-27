@@ -1,7 +1,8 @@
 #ifndef PIECE_H
 #define PIECE_H
 #include <string>
-#include <ostream>
+#include <iostream>
+#include <array>
 
 class Piece
 {
@@ -33,6 +34,7 @@ public:
 	const Type& getType() const;
 	virtual void move() const = 0;
 
+	friend std::ostream& operator<< (std::ostream& out, const Color& color);
 	friend std::ostream& operator<< (std::ostream& out, const Piece& piece);
 	bool operator== (const Piece& piece) const;
 

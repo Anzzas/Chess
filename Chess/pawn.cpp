@@ -7,5 +7,5 @@ Pawn Pawn::createPawn(Color color)
 
 void Pawn::move() const
 {
-
+	std::cout << "moving forward.\n";
 }
