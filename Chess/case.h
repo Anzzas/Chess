@@ -12,11 +12,11 @@ public:
 	Case(Case&&) = delete;
 
 	friend std::ostream& operator<< (std::ostream& out, const Case& c);
-	void setPiece(const Piece& piece);
+	void setPiece(std::unique_ptr<Piece> piece);
 
 private:
 
-	std::unique_ptr<Piece> m_piece{};
+	std::unique_ptr<Piece> m_piece;
 };
 
 #endif

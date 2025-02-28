@@ -1,7 +1,7 @@
 #include "piece.h"
 #include <cctype>
 
-char getLowerChar(char c) 
+char getLowerChar(char c)
 {
 	return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
 }

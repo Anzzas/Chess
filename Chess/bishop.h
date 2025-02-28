@@ -6,7 +6,6 @@ class Bishop : public Piece
 {
 public:
 
-	static Bishop createBishop(Color color);
 	void move() const override;
 
 private:
@@ -15,6 +14,8 @@ private:
 		: Piece{ symbol, color, type }
 	{
 	}
+
+	friend class PieceFactory;
 };
 
 #endif

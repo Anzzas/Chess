@@ -9,10 +9,4 @@
 
 int main()
 {
-	Case c{};
-
-	c.setPiece(Pawn::createPawn(Piece::black));
-
-
-	std::cout << c << "\n";
 }

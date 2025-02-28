@@ -11,11 +11,11 @@ std::ostream& operator<< (std::ostream& out, const Case& c)
 	return out;
 }
 
-void Case::setPiece(const Piece& piece)
+void Case::setPiece(std::unique_ptr<Piece> piece)
 {
 	if (m_piece)
 		std::cout << "Cannot add another piece !\n";
 
 	else
-		m_piece = std::make_unique<Piece>(piece);
+		m_piece = std::move(piece);
 }

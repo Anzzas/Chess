@@ -6,7 +6,6 @@ class King : public Piece
 {
 public:
 
-	static King createKing(Color color);
 	void move() const override;
 
 private:
@@ -15,6 +14,8 @@ private:
 		: Piece{ symbol, color, type }
 	{
 	}
+
+	friend class PieceFactory;
 };
 
 #endif
