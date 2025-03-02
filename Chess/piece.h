@@ -3,6 +3,9 @@
 #include <string>
 #include <iostream>
 #include <array>
+#include <utility>
+
+class Board;
 
 class Piece
 {
@@ -33,9 +36,11 @@ public:
 	const Color& getColor() const;
 	const Type& getType() const;
 	virtual void move() const = 0;
+	virtual bool canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const = 0;
 
 	friend std::ostream& operator<< (std::ostream& out, const Color& color);
 	friend std::ostream& operator<< (std::ostream& out, const Piece& piece);
+	Piece& operator= (const Piece& piece);
 	bool isSameColor(const Piece& piece) const;
 
 protected:

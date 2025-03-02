@@ -1,14 +1,12 @@
 #ifndef PIECEFACTORY_H
 #define PIECEFACTORY_H
+#include "pawn.h" 
+#include "rook.h"
+#include "knight.h"
+#include "bishop.h"
+#include "queen.h"
+#include "king.h"
 #include <memory>
-#include "piece.h"
-
-class Pawn;
-class Bishop;
-class Knight;
-class Rook;
-class Queen;
-class King;
 
 class PieceFactory
 {

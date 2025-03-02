@@ -39,3 +39,17 @@ std::ostream& operator<< (std::ostream& out, const Piece::Color& color)
 	out << colors[color];
 	return out;
 }
+
+bool Piece::isSameColor(const Piece& piece) const
+{
+	return getColor() == piece.getColor() ? true : false;
+}
+
+Piece& Piece::operator= (const Piece& piece)
+{
+	m_symbol = piece.m_symbol;
+	m_color = piece.m_color;
+	m_type = piece.m_type;
+
+	return *this;
+}

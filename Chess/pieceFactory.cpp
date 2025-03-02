@@ -1,10 +1,4 @@
 #include "pieceFactory.h"
-#include "pawn.h"
-#include "rook.h"
-#include "knight.h"
-#include "bishop.h"
-#include "queen.h"
-#include "king.h"
 
 std::unique_ptr<Piece> PieceFactory::createPawn(Piece::Color color)
 {
@@ -34,4 +28,18 @@ std::unique_ptr<Piece> PieceFactory::createQueen(Piece::Color color)
 std::unique_ptr<Piece> PieceFactory::createKing(Piece::Color color)
 {
 	return std::make_unique<King>(King{ 'K', color, Piece::Type::king });
+}
+
+std::unique_ptr<Piece> PieceFactory::createPiece(Piece::Type type, Piece::Color color)
+{
+	switch (type)
+	{
+	case Piece::pawn: return PieceFactory::createPawn(color);
+	case Piece::bishop: return PieceFactory::createBishop(color);
+	case Piece::knight: return PieceFactory::createKnight(color);
+	case Piece::rook: return PieceFactory::createRook(color);
+	case Piece::queen: return PieceFactory::createQueen(color);
+	case Piece::king: return PieceFactory::createKing(color);
+	default: throw std::runtime_error{ "Undefined Piece Type" };
+	}
 }
