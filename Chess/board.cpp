@@ -35,33 +35,17 @@ void Board::movePiece(const std::pair<size_t, size_t> startPosition, const std::
 	targetCase.replacePiece(startCase.getCase());
 }
 
-bool Board::isKingInCheck(Piece::Color kingColor) const 
+bool Board::isKingInCheck(Piece::Color kingColor, std::pair<size_t, size_t> simulatePosition) const
 {
-	// Finding specified color's King
 	std::pair<size_t, size_t> kingPosition{};
 
-	bool kingFound{};
-	for (size_t y{ 0 }; y < boardSettings::boardSize; y++)
-	{
-		auto found{ std::find_if(m_board[y].begin(), m_board[y].end(), [&](const Case& c)
-			{
-				if (c.isEmpty())
-					return false;
+	// If a value is specified in arguments then checks for a specified position instead
+	if (simulatePosition.first < boardSettings::boardSize && simulatePosition.second < boardSettings::boardSize)
+		std::pair<size_t, size_t> kingPosition = simulatePosition;
 
-			return c.getPiece().getType() == Piece::king && c.getPiece().getColor() == kingColor;
-			}) };
-
-		if (found != m_board[y].end())
-		{
-			size_t x{ static_cast<size_t>(std::distance(m_board[y].begin(), found))};
-			kingPosition = { y, x };
-			kingFound = true;
-			break;
-		}
-	}
-
-	if (!kingFound)
-		throw std::runtime_error{ "No king found" };
+	// Getting King's position
+	else
+		std::pair<size_t, size_t> kingPosition = getKingPosition(kingColor);
 
 	// Checks if any opponent piece can reach King's position
 	for (size_t y{ 0 }; y < boardSettings::boardSize; y++)
@@ -78,4 +62,29 @@ bool Board::isKingInCheck(Piece::Color kingColor) const
 		}
 	}
 	return false;
+}
+
+const std::pair<size_t, size_t> Board::getKingPosition(Piece::Color kingColor) const
+{
+	bool kingFound{};
+	for (size_t y{ 0 }; y < boardSettings::boardSize; y++)
+	{
+		auto found{ std::find_if(m_board[y].begin(), m_board[y].end(), [&](const Case& c)
+			{
+				if (c.isEmpty())
+					return false;
+
+			return c.getPiece().getType() == Piece::king && c.getPiece().getColor() == kingColor;
+			}) };
+
+		if (found != m_board[y].end())
+		{
+			size_t x{ static_cast<size_t>(std::distance(m_board[y].begin(), found)) };
+			return { y, x };
+		}
+	}
+
+	if (!kingFound)
+		throw std::runtime_error{ "No king found" };
+
 }

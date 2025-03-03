@@ -16,18 +16,18 @@ bool King::canMoveTo(const Board& board, std::pair<size_t, size_t> startPosition
 	const Case& TargetCase{ board.getBoard()[targetPosition.first][targetPosition.second] };
 	const size_t x_Target{ targetPosition.second };
 	const size_t y_Target{ targetPosition.first };
+	
+		// Check up, down, right, left directions
+		if (y_Target == y_Start + 1 || y_Target == y_Start - 1 || x_Target == x_Start + 1 || x_Target == x_Start - 1)
+			return true;
 
-	// Check up, down, right, left directions
-	if (y_Target == y_Start + 1 || y_Target == y_Start - 1 || x_Target == x_Start + 1 || x_Target == x_Start - 1)
-		return true;
+		// Check down-right, down-left directions
+		if ((y_Target == y_Start + 1 && x_Target == x_Start - 1) || (y_Target == y_Start + 1 && x_Target == x_Start + 1))
+			return true;
 
-	// Check down-right, down-left directions
-	if ((y_Target == y_Start + 1 && x_Target == x_Start - 1) || (y_Target == y_Start + 1 && x_Target == x_Start + 1))
-		return true;
-
-	// Check up-right, up-left directions
-	if ((y_Target == y_Start - 1 && x_Target == x_Start - 1) || (y_Target == y_Start - 1 && x_Target == x_Start + 1))
-		return true;
+		// Check up-right, up-left directions
+		if ((y_Target == y_Start - 1 && x_Target == x_Start - 1) || (y_Target == y_Start - 1 && x_Target == x_Start + 1))
+			return true;
 
 	return false;
 }

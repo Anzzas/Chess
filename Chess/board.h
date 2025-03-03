@@ -75,7 +75,9 @@ public:
 	const Point2D& getBoard() const;
 	friend std::ostream& operator<< (std::ostream& out, const Board& board);
 	void movePiece(const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition);
-	bool isKingInCheck(Piece::Color kingColor) const;
+	bool isKingInCheck(Piece::Color kingColor, std::pair<size_t, size_t> simulatePosition = {10, 10}) const; // Default simulatePosition value is a sentinel value and won't be used. Only to check a specific location check for KING
+	const std::pair<size_t, size_t> getKingPosition(Piece::Color kingColor) const;
+
 
 private:
 
