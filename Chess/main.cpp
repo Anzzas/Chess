@@ -6,7 +6,7 @@
 #include <utility>
 #include <iterator>
 
-std::pair<size_t, size_t> inputInitialCase(const Board& board)
+std::pair<size_t, size_t> inputInitialCase(const Board& board, const Piece::Color playerColor)
 {
 	size_t x{};
 	size_t y{};
@@ -32,9 +32,19 @@ std::pair<size_t, size_t> inputInitialCase(const Board& board)
 			continue;
 		}
 
-		else if (board.getBoard()[y][x].getPiece().getColor() == Piece::black)
+		else if (board.getBoard()[y][x].getPiece().getColor() != playerColor)
 		{
-			std::cout << "Select one of your white pieces!\n\n";
+			std::cout << "Select one of your ";
+			switch (playerColor)
+			{
+			case Piece::white:
+				std::cout << "white";
+				break;
+			case Piece::black:
+				std::cout << "black";
+				break;
+			}
+			std::cout << " pieces!\n\n";
 			continue;
 		}
 		break;
@@ -42,7 +52,7 @@ std::pair<size_t, size_t> inputInitialCase(const Board& board)
 	return std::pair{ y, x };
 }
 
-std::pair<size_t, size_t> inputTargetCase(const Board& board)
+std::pair<size_t, size_t> inputTargetCase(const Board& board, const Piece::Color playerColor)
 {
 	size_t x{};
 	size_t y{};
@@ -62,12 +72,22 @@ std::pair<size_t, size_t> inputTargetCase(const Board& board)
 		y = static_cast<size_t>(boardSettings::choiceToCoord.find(choice)->second.first);
 		const Case& targetCase = board.getBoard()[y][x];
 
-		if (targetCase.isEmpty() || targetCase.getPiece().getColor() == Piece::black)
+		if (targetCase.isEmpty() || targetCase.getPiece().getColor() != playerColor)
 			break;
 
-		else if (targetCase.getPiece().getColor() == Piece::white)
+		else if (targetCase.getPiece().getColor() == playerColor)
 		{
-			std::cout << "There is already a white piece here !\n\n";
+			std::cout << "There is already a ";
+			switch (playerColor)
+			{
+			case Piece::white:
+				std::cout << "white";
+				break;
+			case Piece::black:
+				std::cout << "black";
+				break;
+			}
+			std::cout << " piece here !\n\n";
 			continue;
 		}
 	}
@@ -76,16 +96,27 @@ std::pair<size_t, size_t> inputTargetCase(const Board& board)
 
 int main()
 {
-	std::cout << "\tChess Game\n" << "You are playing white pieces !\n\n";
+	std::cout << "\tChess Game\n";
 	
 	Board board{};
 	std::cout << board << "\n\n";
-
+	Piece::Color playerTurn{ Piece::white };
 	while (true)
 	{
+		std::cout << "It is ";
+		switch (playerTurn)
+		{
+		case Piece::white:
+			std::cout << "white";
+			break;
+		case Piece::black:
+			std::cout << "black";
+			break;
+		}
+		std::cout << " turn!\n\n";
 
-		std::pair startCase{ inputInitialCase(board) };
-		std::pair targetCase{ inputTargetCase(board) };
+		std::pair startCase{ inputInitialCase(board, playerTurn) };
+		std::pair targetCase{ inputTargetCase(board, playerTurn) };
 		const Piece& choosenPiece{ board.getBoard()[startCase.first][startCase.second].getPiece() };
 
 		if (!choosenPiece.canMoveTo(board, startCase, targetCase))
@@ -95,11 +126,14 @@ int main()
 		}
 			board.movePiece(startCase, targetCase);
 
-			if (board.isKingInCheck(Piece::black))
+			if (board.isCheckMate(choosenPiece.getColor() == Piece::black ? Piece::white : Piece::black))
 			{
-				std::cout << "CHECK !\n\n";
+				std::cout << "CHECK MATE !\n\n";
+				return 0;
 			}
 
 			std::cout << board << "\n\n"; 
+
+			playerTurn = playerTurn == Piece::white ? Piece::black : Piece::white;
 	}
 }

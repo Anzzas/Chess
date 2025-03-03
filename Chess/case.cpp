@@ -43,3 +43,8 @@ void Case::replacePiece(std::unique_ptr<Piece>& startingCase)
 }
 
 void Case::deletePiece() { m_case.reset(); }
+
+const std::unique_ptr<Piece>& Case::getCase() const
+{
+	return m_case;
+}

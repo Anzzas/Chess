@@ -41,11 +41,11 @@ bool Board::isKingInCheck(Piece::Color kingColor, std::pair<size_t, size_t> simu
 
 	// If a value is specified in arguments then checks for a specified position instead
 	if (simulatePosition.first < boardSettings::boardSize && simulatePosition.second < boardSettings::boardSize)
-		std::pair<size_t, size_t> kingPosition = simulatePosition;
+		kingPosition = simulatePosition;
 
 	// Getting King's position
 	else
-		std::pair<size_t, size_t> kingPosition = getKingPosition(kingColor);
+		kingPosition = getKingPosition(kingColor);
 
 	// Checks if any opponent piece can reach King's position
 	for (size_t y{ 0 }; y < boardSettings::boardSize; y++)
@@ -56,8 +56,21 @@ bool Board::isKingInCheck(Piece::Color kingColor, std::pair<size_t, size_t> simu
 			{
 				std::pair<size_t, size_t> threatPosition{ y, x };
 
-				if (m_board[y][x].getPiece().canMoveTo(*this, threatPosition, kingPosition))
-					return true;
+				if (dynamic_cast<Pawn*>(m_board[y][x].getCase().get())) // Simulate King for the special case where the pawn can move 2 cases forward
+				{
+					// Vérifier uniquement si le pion peut capturer à la position du roi
+					int pawnDirection = (m_board[y][x].getPiece().getColor() == Piece::white) ? -1 : 1;
+
+					// Un pion peut capturer uniquement en diagonale
+					if ((y + pawnDirection == kingPosition.first) && (x + 1 == kingPosition.second || x - 1 == kingPosition.second)) 
+						return true;
+				}
+
+				else if (!dynamic_cast<King*>(m_board[y][x].getCase().get()))
+				{
+					if (m_board[y][x].getPiece().canMoveTo(*this, threatPosition, kingPosition))
+						return true;
+				}
 			}
 		}
 	}
@@ -87,4 +100,36 @@ const std::pair<size_t, size_t> Board::getKingPosition(Piece::Color kingColor) c
 	if (!kingFound)
 		throw std::runtime_error{ "No king found" };
 
+}
+
+bool Board::isCheckMate(Piece::Color kingColor) const
+{
+	std::pair<size_t, size_t> kingPosition{ getKingPosition(kingColor) };
+	size_t x{ kingPosition.second };
+	size_t y{ kingPosition.first };
+
+	if (isKingInCheck(kingColor))
+	{
+		// Up, down, left, right check
+		if (y + 1 < boardSettings::boardSize && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y + 1, x }))
+			return false;
+		if (y - 1 >= 0 && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y - 1, x }))
+			return false;
+		if (x + 1 < boardSettings::boardSize && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y, x + 1 }))
+			return false;
+		if (x - 1 >= 0 && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y, x - 1 }))
+			return false;
+
+		// Diagonals check
+		if (y + 1 < boardSettings::boardSize && x + 1 < boardSettings::boardSize && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y + 1, x + 1 }))
+			return false;
+		if (y - 1 >= 0 && x + 1 < boardSettings::boardSize && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y - 1, x + 1 }))
+			return false;
+		if (y + 1 < boardSettings::boardSize && x - 1 >= 0 && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y + 1, x - 1 }))
+			return false;
+		if (y - 1 >= 0 && x - 1 >= 0 && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y - 1, x - 1 }))
+			return false;
+
+		return true;
+	}
 }

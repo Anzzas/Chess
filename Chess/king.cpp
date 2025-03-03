@@ -17,6 +17,8 @@ bool King::canMoveTo(const Board& board, std::pair<size_t, size_t> startPosition
 	const size_t x_Target{ targetPosition.second };
 	const size_t y_Target{ targetPosition.first };
 	
+	if (!board.isKingInCheck(m_color, targetPosition))
+	{
 		// Check up, down, right, left directions
 		if (y_Target == y_Start + 1 || y_Target == y_Start - 1 || x_Target == x_Start + 1 || x_Target == x_Start - 1)
 			return true;
@@ -28,6 +30,6 @@ bool King::canMoveTo(const Board& board, std::pair<size_t, size_t> startPosition
 		// Check up-right, up-left directions
 		if ((y_Target == y_Start - 1 && x_Target == x_Start - 1) || (y_Target == y_Start - 1 && x_Target == x_Start + 1))
 			return true;
-
+	}
 	return false;
 }

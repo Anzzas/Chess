@@ -20,7 +20,7 @@ bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
 		if (m_color == Piece::white)
 		{
 			// Moving 2 cases at starting case
-			if (y_Start == 6 && (y_Target == y_Start - 1 || y_Target == y_Start - 2) && x_Target == x_Start)
+			if (y_Start == 6 && (y_Target == y_Start - 1 || y_Target == y_Start - 2) && x_Target == x_Start && TargetCase.isEmpty())
 				return true;
 
 			// Moving 1 case
@@ -33,7 +33,7 @@ bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
 
 		else if (m_color == Piece::black)
 		{
-			if (y_Start == 1 && (y_Target == y_Start + 1 || y_Target == y_Start + 2) && x_Target == x_Start)
+			if (y_Start == 1 && (y_Target == y_Start + 1 || y_Target == y_Start + 2) && x_Target == x_Start && TargetCase.isEmpty())
 				return true;
 
 			if (y_Target == y_Start + 1 && x_Target == x_Start)

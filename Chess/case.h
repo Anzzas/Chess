@@ -19,6 +19,7 @@ public:
 	void replacePiece(std::unique_ptr<Piece>& piece);
 	void deletePiece();
 	std::unique_ptr<Piece>& getCase();
+	const std::unique_ptr<Piece>& getCase() const;
 
 private:
 
