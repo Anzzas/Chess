@@ -5,6 +5,7 @@
 #include <array>
 #include <map>
 #include <utility>
+#include <algorithm>
 
 namespace boardSettings
 {
@@ -74,6 +75,7 @@ public:
 	const Point2D& getBoard() const;
 	friend std::ostream& operator<< (std::ostream& out, const Board& board);
 	void movePiece(const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition);
+	bool isKingInCheck(Piece::Color kingColor) const;
 
 private:
 

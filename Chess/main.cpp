@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <utility>
+#include <iterator>
 
 std::pair<size_t, size_t> inputInitialCase(const Board& board)
 {
