@@ -94,6 +94,12 @@ int main()
 			continue;
 		}
 			board.movePiece(startCase, targetCase);
+
+			if (board.isKingInCheck(Piece::black))
+			{
+				std::cout << "CHECK !\n\n";
+			}
+
 			std::cout << board << "\n\n"; 
 	}
 }

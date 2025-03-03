@@ -87,6 +87,7 @@ bool Queen::canMoveTo(const Board& board, std::pair<size_t, size_t> startPositio
 				}
 			}
 		}
+		return true;
 	}
 
 	// Vertical and horizontal movements check
@@ -125,6 +126,7 @@ bool Queen::canMoveTo(const Board& board, std::pair<size_t, size_t> startPositio
 			if (!board.getBoard()[y_Start][x - 1].isEmpty() && x - 1 != x_Target)
 				return false;
 		}
+		return true;
 	}
-	return true;
+	return false;
 }

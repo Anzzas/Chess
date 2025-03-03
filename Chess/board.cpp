@@ -37,27 +37,45 @@ void Board::movePiece(const std::pair<size_t, size_t> startPosition, const std::
 
 bool Board::isKingInCheck(Piece::Color kingColor) const 
 {
-	// 1. Trouver la position du roi de la couleur spécifiée
+	// Finding specified color's King
 	std::pair<size_t, size_t> kingPosition{};
 
 	bool kingFound{};
-	for (size_t x{ 0 }; x < boardSettings::boardSize; x++)
+	for (size_t y{ 0 }; y < boardSettings::boardSize; y++)
 	{
-		auto found{ std::find_if(m_board[x].begin(), m_board[x].end(), [&](const Case& c)
+		auto found{ std::find_if(m_board[y].begin(), m_board[y].end(), [&](const Case& c)
 			{
+				if (c.isEmpty())
+					return false;
+
 			return c.getPiece().getType() == Piece::king && c.getPiece().getColor() == kingColor;
 			}) };
 
-		if (found == m_board[x].end())
-			throw std::runtime_error{ "No king found" };
-
-		else
+		if (found != m_board[y].end())
 		{
-			size_t y{ std::distance(m_board[x].begin(), found)};
+			size_t x{ static_cast<size_t>(std::distance(m_board[y].begin(), found))};
 			kingPosition = { y, x };
 			kingFound = true;
 			break;
 		}
 	}
-	// 2. Vérifier si une pièce adverse peut atteindre cette position
+
+	if (!kingFound)
+		throw std::runtime_error{ "No king found" };
+
+	// Checks if any opponent piece can reach King's position
+	for (size_t y{ 0 }; y < boardSettings::boardSize; y++)
+	{
+		for (size_t x{ 0 }; x < boardSettings::boardSize; x++)
+		{
+			if (!m_board[y][x].isEmpty() && m_board[y][x].getPiece().getColor() != kingColor)
+			{
+				std::pair<size_t, size_t> threatPosition{ y, x };
+
+				if (m_board[y][x].getPiece().canMoveTo(*this, threatPosition, kingPosition))
+					return true;
+			}
+		}
+	}
+	return false;
 }
