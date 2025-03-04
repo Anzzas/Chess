@@ -6,6 +6,7 @@
 #include <map>
 #include <utility>
 #include <algorithm>
+#include <vector>
 
 namespace boardSettings
 {
@@ -79,6 +80,7 @@ public:
 	const std::pair<size_t, size_t> getKingPosition(Piece::Color kingColor) const;
 	bool isCheckMate(Piece::Color kingColor);
 	std::pair<size_t, size_t> getAttackingPieceCoord(Piece::Color kingColor);
+	std::vector<std::pair<size_t, size_t>> findAttackPath(std::pair<size_t, size_t> attackerPos, std::pair<size_t, size_t> kingPos);
 
 
 private:

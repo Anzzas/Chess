@@ -126,9 +126,8 @@ bool Board::isCheckMate(Piece::Color kingColor)
 			int newX = static_cast<int>(x_king) + dx;
 
 			// Vérifier les limites de l'échiquier
-			if (newY >= 0 && newY < boardSettings::boardSize &&
-				newX >= 0 && newX < boardSettings::boardSize) {
-
+			if (newY >= 0 && newY < boardSettings::boardSize && newX >= 0 && newX < boardSettings::boardSize) 
+			{
 				// Vérifier si le roi peut se déplacer à cette position
 				if (m_board[y_king][x_king].getPiece().canMoveTo(*this, kingPosition, std::pair<size_t, size_t>{static_cast<size_t>(newY), static_cast<size_t>(newX)}))
 					return false;  // Le roi peut s'échapper
@@ -137,31 +136,43 @@ bool Board::isCheckMate(Piece::Color kingColor)
 	}
 
 	// 2. Verifying if kingColor pieces can take the attacker out
-	std::pair<size_t, size_t> AttackingPieceCoord(getAttackingPieceCoord(kingColor == Piece::white ? Piece::black : Piece::white));
-	for (size_t x{}; x < boardSettings::boardSize; x++)
+	std::pair<size_t, size_t> attackingPieceCoord(getAttackingPieceCoord(kingColor == Piece::white ? Piece::black : Piece::white));
+	const Case& attackingPieceCase{ m_board[attackingPieceCoord.first][attackingPieceCoord.second] };
+
+	for (size_t y{}; y < boardSettings::boardSize; y++)
 	{
-		for (size_t y{}; y < boardSettings::boardSize; y++)
+		for (size_t x{}; x < boardSettings::boardSize; x++)
 		{
-			// If a piece of the same color as king can take the attacking piece, then it is not checkmate
-			if (m_board[y][x].getPiece().getColor() == kingColor && m_board[y][x].getPiece().canMoveTo(*this, std::pair{y, x}, AttackingPieceCoord))
-				return false;
-			else if (m_board[y][x].getPiece().getColor() == kingColor && m_board[y][x].getPiece().canMoveTo(*this, std::pair{ y, x }, AttackingPieceCoord))
+			if (!m_board[y][x].isEmpty() && m_board[y][x].getPiece().getColor() == kingColor)
+			{
+				// If a piece of the same color as king can take the attacking piece, then it is not checkmate
+				if (m_board[y][x].getPiece().canMoveTo(*this, std::pair{ y, x }, attackingPieceCoord))
+					return false;
+
+				// 3. Vérifie si une pièce peut se déplacer dans les cases de findAttackPath
+				std::vector<std::pair<size_t, size_t>> path = findAttackPath(attackingPieceCoord, kingPosition);
+				for (auto& e : path)
+				{
+					if (m_board[y][x].getPiece().canMoveTo(*this, std::pair{ y, x }, std::pair{e.first, e.second}))
+						return false;
+				}
+			}
 		}
 	}
 
 	return true;
 }
 
-std::pair<size_t, size_t> Board::getAttackingPieceCoord(Piece::Color kingColor)
+std::pair<size_t, size_t> Board::getAttackingPieceCoord(Piece::Color attackingPieceColor)
 {
-	std::pair<size_t, size_t> kingPosition{ getKingPosition(kingColor) };
+	std::pair<size_t, size_t> kingPosition{ getKingPosition(attackingPieceColor == Piece::white ? Piece::black : Piece::white) };
 
 	for (size_t y{ 0 }; y < boardSettings::boardSize; y++)
 	{
 		for (size_t x{ 0 }; x < boardSettings::boardSize; x++)
 		{
 			// Vérifie si la case contient une pièce de couleur opposée
-			if (!m_board[y][x].isEmpty() && m_board[y][x].getPiece().getColor() != kingColor)
+			if (!m_board[y][x].isEmpty() && m_board[y][x].getPiece().getColor() == attackingPieceColor)
 			{
 				std::pair<size_t, size_t> threatPosition{ y, x };
 				Piece* piece = m_board[y][x].getCase().get();
@@ -194,4 +205,37 @@ std::pair<size_t, size_t> Board::getAttackingPieceCoord(Piece::Color kingColor)
 
 	// Aucune pièce n'attaque le roi - retourne une position invalide comme marqueur
 	return { boardSettings::boardSize, boardSettings::boardSize };
+}
+
+std::vector<std::pair<size_t, size_t>> Board::findAttackPath(std::pair<size_t, size_t> attackerPos, std::pair<size_t, size_t> kingPos)
+{
+	std::vector<std::pair<size_t, size_t>> path;
+
+	// Calculer la direction de l'attaque
+	int attacker_Y{ static_cast<int>(attackerPos.first) };
+	int attacker_X{ static_cast<int>(attackerPos.second) };
+
+	int king_Y{ static_cast<int>(kingPos.first) };
+	int king_X{ static_cast<int>(kingPos.second) };
+
+	int deltaY{ king_Y - attacker_Y };
+	int deltaX{ king_X - attacker_X };
+
+	int dirY{ (deltaY == 0) ? 0 : (deltaY > 0 ? 1 : -1) };
+	int dirX{ (deltaX == 0) ? 0 : (deltaX > 0 ? 1 : -1) };
+
+	int currentY{ attacker_Y + dirY };
+	int currentX{ attacker_X + dirX };
+
+	// Collecter toutes les cases sur cette ligne/diagonale
+	while (currentY != king_Y || currentX != king_X)
+	{
+		if (currentY >= 0 && currentY < boardSettings::boardSize && currentX >= 0 && currentX < boardSettings::boardSize)
+			path.push_back({ static_cast<size_t>(currentY), static_cast<size_t>(currentX) });
+
+		currentY += dirY;
+		currentX += dirX;
+	}
+
+	return path;
 }
