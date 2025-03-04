@@ -102,34 +102,96 @@ const std::pair<size_t, size_t> Board::getKingPosition(Piece::Color kingColor) c
 
 }
 
-bool Board::isCheckMate(Piece::Color kingColor) const
+bool Board::isCheckMate(Piece::Color kingColor)
 {
 	std::pair<size_t, size_t> kingPosition{ getKingPosition(kingColor) };
-	size_t x{ kingPosition.second };
-	size_t y{ kingPosition.first };
+	size_t x_king{ kingPosition.second };
+	size_t y_king{ kingPosition.first };
 
-	if (isKingInCheck(kingColor))
-	{
-		// Up, down, left, right check
-		if (y + 1 < boardSettings::boardSize && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y + 1, x }))
-			return false;
-		if (y - 1 >= 0 && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y - 1, x }))
-			return false;
-		if (x + 1 < boardSettings::boardSize && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y, x + 1 }))
-			return false;
-		if (x - 1 >= 0 && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y, x - 1 }))
-			return false;
+	if (!isKingInCheck(kingColor))
+		return false;
 
-		// Diagonals check
-		if (y + 1 < boardSettings::boardSize && x + 1 < boardSettings::boardSize && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y + 1, x + 1 }))
-			return false;
-		if (y - 1 >= 0 && x + 1 < boardSettings::boardSize && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y - 1, x + 1 }))
-			return false;
-		if (y + 1 < boardSettings::boardSize && x - 1 >= 0 && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y + 1, x - 1 }))
-			return false;
-		if (y - 1 >= 0 && x - 1 >= 0 && m_board[y][x].getPiece().canMoveTo(*this, kingPosition, std::pair{ y - 1, x - 1 }))
-			return false;
+	// 1. Vérifier si le roi peut s'échapper en se déplaçant
+	// Up, down, left, right, diagonals check
+	for (int dy = -1; dy <= 1; dy++) 
+{
+		for (int dx = -1; dx <= 1; dx++) 
+		{
+			// Ignorer la position actuelle du roi
+			if (dx == 0 && dy == 0)
+				continue;
 
-		return true;
+			// Calculer la nouvelle position potentielle
+			int newY = static_cast<int>(y_king) + dy;
+			int newX = static_cast<int>(x_king) + dx;
+
+			// Vérifier les limites de l'échiquier
+			if (newY >= 0 && newY < boardSettings::boardSize &&
+				newX >= 0 && newX < boardSettings::boardSize) {
+
+				// Vérifier si le roi peut se déplacer à cette position
+				if (m_board[y_king][x_king].getPiece().canMoveTo(*this, kingPosition, std::pair<size_t, size_t>{static_cast<size_t>(newY), static_cast<size_t>(newX)}))
+					return false;  // Le roi peut s'échapper
+			}
+		}
 	}
+
+	// 2. Verifying if kingColor pieces can take the attacker out
+	std::pair<size_t, size_t> AttackingPieceCoord(getAttackingPieceCoord(kingColor == Piece::white ? Piece::black : Piece::white));
+	for (size_t x{}; x < boardSettings::boardSize; x++)
+	{
+		for (size_t y{}; y < boardSettings::boardSize; y++)
+		{
+			// If a piece of the same color as king can take the attacking piece, then it is not checkmate
+			if (m_board[y][x].getPiece().getColor() == kingColor && m_board[y][x].getPiece().canMoveTo(*this, std::pair{y, x}, AttackingPieceCoord))
+				return false;
+			else if (m_board[y][x].getPiece().getColor() == kingColor && m_board[y][x].getPiece().canMoveTo(*this, std::pair{ y, x }, AttackingPieceCoord))
+		}
+	}
+
+	return true;
+}
+
+std::pair<size_t, size_t> Board::getAttackingPieceCoord(Piece::Color kingColor)
+{
+	std::pair<size_t, size_t> kingPosition{ getKingPosition(kingColor) };
+
+	for (size_t y{ 0 }; y < boardSettings::boardSize; y++)
+	{
+		for (size_t x{ 0 }; x < boardSettings::boardSize; x++)
+		{
+			// Vérifie si la case contient une pièce de couleur opposée
+			if (!m_board[y][x].isEmpty() && m_board[y][x].getPiece().getColor() != kingColor)
+			{
+				std::pair<size_t, size_t> threatPosition{ y, x };
+				Piece* piece = m_board[y][x].getCase().get();
+
+				// Traitement spécial pour les pions (qui ont des règles spéciales de capture)
+				if (dynamic_cast<Pawn*>(piece))
+				{
+					// Détermine la direction du pion selon sa couleur
+					int pawnDirection = (piece->getColor() == Piece::white) ? -1 : 1;
+
+					// Vérifie si le pion peut capturer le roi (diagonale avant uniquement)
+					if ((y + pawnDirection == kingPosition.first) &&
+						(abs(static_cast<int>(x) - static_cast<int>(kingPosition.second)) == 1))
+					{
+						return { y, x };
+					}
+				}
+				// Pour toutes les pièces sauf les rois
+				else if (!dynamic_cast<King*>(piece))
+				{
+					// Utilise la méthode générique de vérification de mouvement
+					if (piece->canMoveTo(*this, threatPosition, kingPosition))
+					{
+						return { y, x };
+					}
+				}
+			}
+		}
+	}
+
+	// Aucune pièce n'attaque le roi - retourne une position invalide comme marqueur
+	return { boardSettings::boardSize, boardSettings::boardSize };
 }

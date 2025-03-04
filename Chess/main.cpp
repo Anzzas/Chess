@@ -101,6 +101,7 @@ int main()
 	Board board{};
 	std::cout << board << "\n\n";
 	Piece::Color playerTurn{ Piece::white };
+
 	while (true)
 	{
 		std::cout << "It is ";
