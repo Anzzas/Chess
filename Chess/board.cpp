@@ -163,7 +163,7 @@ bool Board::isCheckMate(Piece::Color kingColor)
 	return true;
 }
 
-std::pair<size_t, size_t> Board::getAttackingPieceCoord(Piece::Color attackingPieceColor)
+std::pair<size_t, size_t> Board::getAttackingPieceCoord(Piece::Color attackingPieceColor) const
 {
 	std::pair<size_t, size_t> kingPosition{ getKingPosition(attackingPieceColor == Piece::white ? Piece::black : Piece::white) };
 
@@ -207,7 +207,7 @@ std::pair<size_t, size_t> Board::getAttackingPieceCoord(Piece::Color attackingPi
 	return { boardSettings::boardSize, boardSettings::boardSize };
 }
 
-std::vector<std::pair<size_t, size_t>> Board::findAttackPath(std::pair<size_t, size_t> attackerPos, std::pair<size_t, size_t> kingPos)
+std::vector<std::pair<size_t, size_t>> Board::findAttackPath(std::pair<size_t, size_t> attackerPos, std::pair<size_t, size_t> kingPos) const
 {
 	std::vector<std::pair<size_t, size_t>> path;
 

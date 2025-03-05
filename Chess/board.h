@@ -79,8 +79,8 @@ public:
 	bool isKingInCheck(Piece::Color kingColor, std::pair<size_t, size_t> simulatePosition = {10, 10}) const; // Default simulatePosition value is a sentinel value and won't be used. Only to check a specific location check for KING
 	const std::pair<size_t, size_t> getKingPosition(Piece::Color kingColor) const;
 	bool isCheckMate(Piece::Color kingColor);
-	std::pair<size_t, size_t> getAttackingPieceCoord(Piece::Color kingColor);
-	std::vector<std::pair<size_t, size_t>> findAttackPath(std::pair<size_t, size_t> attackerPos, std::pair<size_t, size_t> kingPos);
+	std::pair<size_t, size_t> getAttackingPieceCoord(Piece::Color attackingPieceColor) const;
+	std::vector<std::pair<size_t, size_t>> findAttackPath(std::pair<size_t, size_t> attackerPos, std::pair<size_t, size_t> kingPos) const;
 
 
 private:

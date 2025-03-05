@@ -47,6 +47,7 @@ std::pair<size_t, size_t> inputInitialCase(const Board& board, const Piece::Colo
 			std::cout << " pieces!\n\n";
 			continue;
 		}
+
 		break;
 	}
 	return std::pair{ y, x };
@@ -70,12 +71,10 @@ std::pair<size_t, size_t> inputTargetCase(const Board& board, const Piece::Color
 
 		x = static_cast<size_t>(boardSettings::choiceToCoord.find(choice)->second.second);
 		y = static_cast<size_t>(boardSettings::choiceToCoord.find(choice)->second.first);
+		const std::pair<size_t, size_t> targetCoord{ y, x };
 		const Case& targetCase = board.getBoard()[y][x];
 
-		if (targetCase.isEmpty() || targetCase.getPiece().getColor() != playerColor)
-			break;
-
-		else if (targetCase.getPiece().getColor() == playerColor)
+		if (!targetCase.isEmpty() && targetCase.getPiece().getColor() == playerColor)
 		{
 			std::cout << "There is already a ";
 			switch (playerColor)
@@ -90,6 +89,23 @@ std::pair<size_t, size_t> inputTargetCase(const Board& board, const Piece::Color
 			std::cout << " piece here !\n\n";
 			continue;
 		}
+
+		else if (board.isKingInCheck(playerColor))
+		{
+			std::pair kingPosition{ board.getKingPosition(playerColor) };
+			std::pair attackerPosition{ board.getAttackingPieceCoord(playerColor == Piece::black ? Piece::white : Piece::black) };
+			std::vector<std::pair<size_t, size_t>> path = board.findAttackPath(attackerPosition, kingPosition);
+
+			for (const auto& e : path)
+			{
+				if (targetCoord == e)
+					return targetCoord;
+			}
+			return std::pair<size_t, size_t> {boardSettings::boardSize, boardSettings::boardSize}; // Sentinel value in order if the selected piece can't defend the KING
+		}
+
+		else if (targetCase.isEmpty() || targetCase.getPiece().getColor() != playerColor)
+			break;
 	}
 	return std::pair{ y, x };
 }
@@ -104,20 +120,15 @@ int main()
 
 	while (true)
 	{
-		std::cout << "It is ";
-		switch (playerTurn)
-		{
-		case Piece::white:
-			std::cout << "white";
-			break;
-		case Piece::black:
-			std::cout << "black";
-			break;
-		}
-		std::cout << " turn!\n\n";
-
 		std::pair startCase{ inputInitialCase(board, playerTurn) };
 		std::pair targetCase{ inputTargetCase(board, playerTurn) };
+
+		if (targetCase == std::pair<size_t, size_t> {boardSettings::boardSize, boardSettings::boardSize})
+		{
+			std::cout << "This Piece cannot defend the king. Please choose another piece.\n\n";
+			continue;
+		}
+
 		const Piece& choosenPiece{ board.getBoard()[startCase.first][startCase.second].getPiece() };
 
 		if (!choosenPiece.canMoveTo(board, startCase, targetCase))
@@ -133,7 +144,22 @@ int main()
 				return 0;
 			}
 
-			std::cout << board << "\n\n"; 
+			std::cout << board << "\n\n";
+
+			std::cout << "It is ";
+			switch (playerTurn)
+			{
+			case Piece::white:
+				std::cout << "white";
+				break;
+			case Piece::black:
+				std::cout << "black";
+				break;
+			}
+			std::cout << " turn!\n\n";
+
+			if (board.isKingInCheck(choosenPiece.getColor() == Piece::black ? Piece::white : Piece::black))
+				std::cout << "CHECK !\n\n";
 
 			playerTurn = playerTurn == Piece::white ? Piece::black : Piece::white;
 	}
