@@ -27,31 +27,36 @@ int main()
 			std::cout << choosenPiece << " cannot move here!\n\n";
 			continue;
 		}
-			board.movePiece(startCase, targetCase);
 
-			if (board.isCheckMate(board.getBoard()[targetCase.first][targetCase.second].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
-			{
-				std::cout << "CHECK MATE !\n\n";
-				return 0;
-			}
+		if (board.isSelfCheck(startCase, targetCase, playerTurn)) // if player self check, he has to try again
+		{
+			std::cout << "You cannot do this move (self check) !\n\n";
+			continue;
+		}
 
-			std::cout << board << "\n\n";
+		if (board.isCheckMate(board.getBoard()[targetCase.first][targetCase.second].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
+		{
+			std::cout << "CHECK MATE !\n\n";
+			return 0;
+		}
 
-			if (board.isKingInCheck(board.getBoard()[targetCase.first][targetCase.second].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
-				std::cout << "CHECK !\n\n";
+		std::cout << board << "\n\n";
 
-			playerTurn = playerTurn == Piece::white ? Piece::black : Piece::white;
+		if (board.isKingInCheck(board.getBoard()[targetCase.first][targetCase.second].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
+			std::cout << "CHECK !\n\n";
 
-			std::cout << "It is ";
-			switch (playerTurn)
-			{
-			case Piece::white:
-				std::cout << "white";
-				break;
-			case Piece::black:
-				std::cout << "black";
-				break;
-			}
-			std::cout << " turn!\n\n";
+		playerTurn = playerTurn == Piece::white ? Piece::black : Piece::white;
+
+		std::cout << "It is ";
+		switch (playerTurn)
+		{
+		case Piece::white:
+			std::cout << "white";
+			break;
+		case Piece::black:
+			std::cout << "black";
+			break;
+		}
+		std::cout << " turn!\n\n";
 	}
  }

@@ -282,6 +282,32 @@ std::vector<std::pair<size_t, size_t>> Board::findAttackPath(std::pair<size_t, s
 		currentY += dirY;
 		currentX += dirX;
 	}
-
 	return path;
+}
+
+bool Board::isSelfCheck(std::pair<size_t, size_t> startCase, std::pair<size_t, size_t> targetCase, Piece::Color playerTurn)
+{
+
+	// Simulating move to verify is the player don't put himself in check
+
+	// Getting a copy of the starting case before moving them and later verifying if targetCase was not empty to get also a copy
+	std::unique_ptr<Piece> tempStartCase{ PieceFactory::createPiece(m_board[startCase.first][startCase.second].getPiece().getType(), m_board[startCase.first][startCase.second].getPiece().getColor()) };
+	std::unique_ptr<Piece> tempTargetCase{};
+
+	movePiece(startCase, targetCase); // Move the piece normally
+
+	if (!isKingInCheck(playerTurn)) // If player own king is not self checked then everything is OK
+		return false;
+
+	if (!m_board[targetCase.first][targetCase.second].isEmpty()) // If the targetCase is not empty then create a copy of it to restore it later
+		tempTargetCase = PieceFactory::createPiece(m_board[targetCase.first][targetCase.second].getPiece().getType(), m_board[targetCase.first][targetCase.second].getPiece().getColor());
+
+	// Put back the moved piece from targetCase to startCase
+	m_board[startCase.first][startCase.second].getCase() = std::move(tempStartCase);
+
+	if (tempTargetCase) // if targetCase was not empty, then restoring the previous piece. Else leave it empty
+		m_board[targetCase.first][targetCase.second].getCase() = std::move(tempTargetCase);
+
+	return true; // If that move put the player himself in check, restore last position and make the player try again
+
 }

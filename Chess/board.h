@@ -80,6 +80,7 @@ public:
 	bool isCheckMate(Piece::Color kingColor);
 	std::pair<size_t, size_t> getAttackingPieceCoord(Piece::Color attackingPieceColor) const;
 	std::vector<std::pair<size_t, size_t>> findAttackPath(std::pair<size_t, size_t> attackerPos, std::pair<size_t, size_t> kingPos) const;
+	bool isSelfCheck(std::pair<size_t, size_t> startCase, std::pair<size_t, size_t> targetCase, Piece::Color playerTurn);
 
 
 private:

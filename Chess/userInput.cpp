@@ -90,11 +90,15 @@ std::pair<size_t, size_t> inputTargetCase(const Board& board, const Piece::Color
 			std::pair attackerPosition{ board.getAttackingPieceCoord(playerColor == Piece::black ? Piece::white : Piece::black) };
 			std::vector<std::pair<size_t, size_t>> path = board.findAttackPath(attackerPosition, kingPosition);
 
+			if (targetCoord == attackerPosition)
+				return targetCoord;
+
 			for (const auto& e : path)
 			{
-				if (targetCoord == e || targetCoord == attackerPosition)
+				if (targetCoord == e)
 					return targetCoord;
 			}
+
 			return std::pair<size_t, size_t> {boardSettings::boardSize, boardSettings::boardSize}; // Sentinel value in order if the selected piece can't defend the KING
 		}
 
