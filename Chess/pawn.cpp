@@ -1,11 +1,6 @@
 #include "pawn.h"
 #include "board.h"
 
-void Pawn::move() const
-{
-	
-}
-
 bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const
 {
 	const size_t x_Start{ startPosition.second };

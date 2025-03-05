@@ -2,8 +2,8 @@
 
 std::ostream& operator<< (std::ostream& out, const Case& c)
 {
-	if (c.m_case)
-		out << *c.m_case.get();
+	if (c.m_piece)
+		out << *c.m_piece.get();
 
 	else
 		out << ".";
@@ -13,38 +13,31 @@ std::ostream& operator<< (std::ostream& out, const Case& c)
 
 std::unique_ptr<Piece>& Case::getCase()
 {
-	return m_case;
+	return m_piece;
 }
 
 void Case::setPiece(std::unique_ptr<Piece> piece)
 {
-	if (m_case)
+	if (m_piece)
 		std::cout << "Cannot add another piece !\n";
 
 	if (piece)
-		m_case = std::move(piece);
-	else
-		m_case = nullptr;
+		m_piece = std::move(piece);
+	else  
+		m_piece = nullptr;
 }
 
 bool Case::isEmpty() const
 {
-	return m_case ? false : true;
+	return m_piece ? false : true;
 }
 
 const Piece& Case::getPiece() const
 {
-	return *m_case.get();
+	return *m_piece.get();
 }
-
-void Case::replacePiece(std::unique_ptr<Piece>& startingCase)
-{
-		m_case = std::move(startingCase);
-}
-
-void Case::deletePiece() { m_case.reset(); }
 
 const std::unique_ptr<Piece>& Case::getCase() const
 {
-	return m_case;
+	return m_piece;
 }

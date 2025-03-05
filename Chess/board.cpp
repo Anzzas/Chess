@@ -32,7 +32,7 @@ void Board::movePiece(const std::pair<size_t, size_t> startPosition, const std::
 	Case& startCase{ m_board[startPosition.first][startPosition.second] };
 	Case& targetCase{ m_board[targetPosition.first][targetPosition.second] };
 
-	targetCase.replacePiece(startCase.getCase());
+	targetCase.getCase() = std::move(startCase.getCase());
 }
 
 bool Board::isKingInCheck(Piece::Color kingColor, std::pair<size_t, size_t> simulatePosition) const
@@ -212,17 +212,17 @@ std::vector<std::pair<size_t, size_t>> Board::findAttackPath(std::pair<size_t, s
 	std::vector<std::pair<size_t, size_t>> path;
 
 	// Calculer la direction de l'attaque
-	int attacker_Y{ static_cast<int>(attackerPos.first) };
-	int attacker_X{ static_cast<int>(attackerPos.second) };
+	const int attacker_Y{ static_cast<int>(attackerPos.first) };
+	const int attacker_X{ static_cast<int>(attackerPos.second) };
 
-	int king_Y{ static_cast<int>(kingPos.first) };
-	int king_X{ static_cast<int>(kingPos.second) };
+	const int king_Y{ static_cast<int>(kingPos.first) };
+	const int king_X{ static_cast<int>(kingPos.second) };
 
-	int deltaY{ king_Y - attacker_Y };
-	int deltaX{ king_X - attacker_X };
+	const int deltaY{ king_Y - attacker_Y };
+	const int deltaX{ king_X - attacker_X };
 
-	int dirY{ (deltaY == 0) ? 0 : (deltaY > 0 ? 1 : -1) };
-	int dirX{ (deltaX == 0) ? 0 : (deltaX > 0 ? 1 : -1) };
+	const int dirY{ (deltaY == 0) ? 0 : (deltaY > 0 ? 1 : -1) };
+	const int dirX{ (deltaX == 0) ? 0 : (deltaX > 0 ? 1 : -1) };
 
 	int currentY{ attacker_Y + dirY };
 	int currentX{ attacker_X + dirX };

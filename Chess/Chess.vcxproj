@@ -139,6 +139,7 @@
     <ClCompile Include="pieceFactory.cpp" />
     <ClCompile Include="queen.cpp" />
     <ClCompile Include="rook.cpp" />
+    <ClCompile Include="userInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bishop.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="pieceFactory.h" />
     <ClInclude Include="queen.h" />
     <ClInclude Include="rook.h" />
+    <ClInclude Include="userInput.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,7 +4,6 @@
 #include "pieceFactory.h"
 #include <array>
 #include <map>
-#include <utility>
 #include <algorithm>
 #include <vector>
 

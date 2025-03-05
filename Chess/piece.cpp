@@ -35,14 +35,10 @@ std::ostream& operator<< (std::ostream& out, const Piece& piece)
 std::ostream& operator<< (std::ostream& out, const Piece::Color& color)
 {
 	constexpr std::array<const char, Piece::max_colors> colors{ 'w', 'b' };
+	static_assert(colors.size() == Piece::max_colors);
 
 	out << colors[color];
 	return out;
-}
-
-bool Piece::isSameColor(const Piece& piece) const
-{
-	return getColor() == piece.getColor() ? true : false;
 }
 
 Piece& Piece::operator= (const Piece& piece)

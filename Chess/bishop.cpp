@@ -1,11 +1,6 @@
 #include "bishop.h"
 #include "board.h"
 
-void Bishop::move() const
-{
-	std::cout << "moving diagonally\n";
-}
-
 bool Bishop::canMoveTo(const Board& board, std::pair<size_t, size_t> startPosition, std::pair<size_t, size_t> targetPosition) const
 {
 	// Starting case coordinates

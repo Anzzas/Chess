@@ -1,11 +1,6 @@
 #include "rook.h"
 #include "board.h"
 
-void Rook::move() const
-{
-
-}
-
 bool Rook::canMoveTo(const Board& board, std::pair<size_t, size_t> startPosition, std::pair<size_t, size_t> targetPosition) const
 {
 	// Starting case coordinates
