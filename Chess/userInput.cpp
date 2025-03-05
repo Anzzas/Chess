@@ -92,7 +92,7 @@ std::pair<size_t, size_t> inputTargetCase(const Board& board, const Piece::Color
 
 			for (const auto& e : path)
 			{
-				if (targetCoord == e)
+				if (targetCoord == e || targetCoord == attackerPosition)
 					return targetCoord;
 			}
 			return std::pair<size_t, size_t> {boardSettings::boardSize, boardSettings::boardSize}; // Sentinel value in order if the selected piece can't defend the KING

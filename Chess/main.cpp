@@ -37,7 +37,7 @@ int main()
 
 			std::cout << board << "\n\n";
 
-			if (board.isKingInCheck(choosenPiece.getColor() == Piece::black ? Piece::white : Piece::black))
+			if (board.isKingInCheck(board.getBoard()[targetCase.first][targetCase.second].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
 				std::cout << "CHECK !\n\n";
 
 			playerTurn = playerTurn == Piece::white ? Piece::black : Piece::white;

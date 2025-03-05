@@ -17,9 +17,11 @@ bool King::canMoveTo(const Board& board, std::pair<size_t, size_t> startPosition
     }
 
     // Vérifier que la case cible est soit vide, soit contient une pièce ennemie
-    if (!TargetCase.isEmpty() && TargetCase.getPiece().getColor() == m_color) {
+    if (!TargetCase.isEmpty() && TargetCase.getPiece().getColor() == m_color)
         return false;
-    }
+
+    else if (!TargetCase.isEmpty() && TargetCase.getPiece().getColor() != m_color)
+        return true;
 
     // Vérifier que le roi ne se met pas lui-même en échec
     if (!board.isKingInCheck(m_color, targetPosition))
