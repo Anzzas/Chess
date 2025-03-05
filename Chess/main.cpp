@@ -29,13 +29,18 @@ int main()
 		}
 			board.movePiece(startCase, targetCase);
 
-			if (board.isCheckMate(choosenPiece.getColor() == Piece::black ? Piece::white : Piece::black))
+			if (board.isCheckMate(board.getBoard()[targetCase.first][targetCase.second].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
 			{
 				std::cout << "CHECK MATE !\n\n";
 				return 0;
 			}
 
 			std::cout << board << "\n\n";
+
+			if (board.isKingInCheck(choosenPiece.getColor() == Piece::black ? Piece::white : Piece::black))
+				std::cout << "CHECK !\n\n";
+
+			playerTurn = playerTurn == Piece::white ? Piece::black : Piece::white;
 
 			std::cout << "It is ";
 			switch (playerTurn)
@@ -48,10 +53,5 @@ int main()
 				break;
 			}
 			std::cout << " turn!\n\n";
-
-			if (board.isKingInCheck(choosenPiece.getColor() == Piece::black ? Piece::white : Piece::black))
-				std::cout << "CHECK !\n\n";
-
-			playerTurn = playerTurn == Piece::white ? Piece::black : Piece::white;
 	}
-}
+ }

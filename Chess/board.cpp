@@ -33,6 +33,52 @@ void Board::movePiece(const std::pair<size_t, size_t> startPosition, const std::
 	Case& targetCase{ m_board[targetPosition.first][targetPosition.second] };
 
 	targetCase.getCase() = std::move(startCase.getCase());
+
+	if (targetCase.getPiece().getType() == Piece::pawn && ((targetCase.getPiece().getColor() == Piece::white && targetPosition.first == 0) || (targetCase.getPiece().getColor() == Piece::black && targetPosition.first == 7)))
+	{
+		size_t y{ static_cast<size_t>(targetCase.getPiece().getColor() == Piece::white ? 0 : 7) };
+
+		Piece::Color color{ m_board[y][targetPosition.second].getPiece().getColor() };
+
+		m_board[y][targetPosition.second].getCase().reset();
+
+		std::cout << "PROMOTION !\n"
+			<< "- 'Q' : Queen\n"
+			<< "- 'B' : Bishop\n"
+			<< "- 'N' : Knight\n"
+			<< "- 'R' : Rook\n"
+			<< "Select a piece: ";
+
+		while (true)
+		{
+			char selection{};
+			std::cin >> selection;
+
+			switch (selection)
+			{
+			case 'Q':
+				m_board[y][targetPosition.second].setPiece(PieceFactory::createQueen(color));
+				break;
+			case 'B':
+				m_board[y][targetPosition.second].setPiece(PieceFactory::createBishop(color));
+				break;
+			case 'N':
+				m_board[y][targetPosition.second].setPiece(PieceFactory::createKnight(color));
+				break;
+			case 'R':
+				m_board[y][targetPosition.second].setPiece(PieceFactory::createRook(color));
+				break;
+			default:
+				std::cout << "Wrong input. Try again: ";
+				std::cin.clear();
+				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+				continue;
+			}
+			std::cout << "You selected a " << selection << ".\n\n";
+			return;
+		}
+
+	}
 }
 
 bool Board::isKingInCheck(Piece::Color kingColor, std::pair<size_t, size_t> simulatePosition) const
