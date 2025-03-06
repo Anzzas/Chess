@@ -311,3 +311,43 @@ bool Board::isSelfCheck(std::pair<size_t, size_t> startCase, std::pair<size_t, s
 	return true; // If that move put the player himself in check, restore last position and make the player try again
 
 }
+
+bool Board::canCaslte(Piece::Color playerTurn) const
+{
+	switch (playerTurn)
+	{
+	case Piece::white:
+		// Left side
+		if (m_board[7][1].isEmpty() && m_board[7][2].isEmpty())
+		{
+
+		}
+
+		// Right side
+		else if (m_board[7][4].isEmpty() && m_board[7][5].isEmpty() && m_board[7][6].isEmpty())
+		{
+
+		}
+		break;
+
+	case Piece::black:
+		// Left side
+		if (m_board[0][1].isEmpty() && m_board[0][2].isEmpty())
+		{
+
+		}
+
+		// Right side
+		else if (m_board[0][4].isEmpty() && m_board[0][5].isEmpty() && m_board[0][6].isEmpty())
+		{
+
+		}
+		break;
+
+	default:
+		throw std::runtime_error{ "Undefined Color Type" };
+		break;
+	}
+
+	return false;
+}
