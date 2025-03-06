@@ -34,3 +34,7 @@ bool King::canMoveTo(const Board& board, std::pair<size_t, size_t> startPosition
     }
     return false;
 }
+
+const bool& King::getHasMoved() const { return hasMoved; }
+
+void King::setHasMoved(bool hasMoved) { this->hasMoved = hasMoved; }

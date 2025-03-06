@@ -312,42 +312,51 @@ bool Board::isSelfCheck(std::pair<size_t, size_t> startCase, std::pair<size_t, s
 
 }
 
-bool Board::canCaslte(Piece::Color playerTurn) const
+bool Board::canCastle(Piece::Color playerTurn) const
 {
-	switch (playerTurn)
-	{
-	case Piece::white:
-		// Left side
-		if (m_board[7][1].isEmpty() && m_board[7][2].isEmpty())
+	const size_t y{ playerTurn == Piece::white ? 7 : 0 };
+	const size_t kingX{ 4 };
+	const size_t leftRookX{ 0 };
+	const size_t rightRookX{ 7 };
+
+	King* king{ dynamic_cast<King*>(m_board[y][kingX].getCase().get()) };
+
+	if (!king || king->getHasMoved())
+		return false;
+
+		// Left side check
+		if (m_board[y][1].isEmpty() && m_board[y][2].isEmpty() && m_board[y][3].isEmpty())
 		{
 
+			for (size_t attackerY{}; attackerY < boardSettings::boardSize; attackerY++)
+			{
+				for (size_t attackerX{}; attackerX < boardSettings::boardSize; attackerX++)
+				{
+					if (!m_board[attackerY][attackerX].isEmpty() && m_board[attackerY][attackerX].getPiece().getColor() != playerTurn)
+					{
+						for (size_t targetX{ 1 }; targetX < 4; targetX++)
+						{
+							if (m_board[attackerY][attackerX].getPiece().canMoveTo(*this, { attackerY, attackerX }, { y, targetX }))
+								return false;
+						}
+					}
+				}
+			}
+
+			Rook* leftRook{ dynamic_cast<Rook*>(m_board[y][leftRookX].getCase().get()) };
+
+			if (leftRook && !leftRook->getHasMoved())
+				return true;
 		}
 
-		// Right side
-		else if (m_board[7][4].isEmpty() && m_board[7][5].isEmpty() && m_board[7][6].isEmpty())
+		// Right side check
+		if (m_board[y][5].isEmpty() && m_board[y][6].isEmpty())
 		{
+			Rook* rightRook{ dynamic_cast<Rook*>(m_board[y][rightRookX].getCase().get()) };
 
+			if (rightRook && !rightRook->getHasMoved())
+				return true;
 		}
-		break;
-
-	case Piece::black:
-		// Left side
-		if (m_board[0][1].isEmpty() && m_board[0][2].isEmpty())
-		{
-
-		}
-
-		// Right side
-		else if (m_board[0][4].isEmpty() && m_board[0][5].isEmpty() && m_board[0][6].isEmpty())
-		{
-
-		}
-		break;
-
-	default:
-		throw std::runtime_error{ "Undefined Color Type" };
-		break;
-	}
 
 	return false;
 }

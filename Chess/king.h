@@ -7,6 +7,8 @@ class King : public Piece
 public:
 
 	bool canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const override;
+	const bool& getHasMoved() const;
+	void setHasMoved(bool hasMoved);
 
 private:
 
@@ -16,6 +18,7 @@ private:
 	}
 
 	friend class PieceFactory;
+	bool hasMoved{};
 };
 
 #endif
