@@ -77,6 +77,31 @@ void Board::movePiece(const std::pair<size_t, size_t> startPosition, const std::
 			std::cout << "You selected a " << selection << ".\n\n";
 			return;
 		}
+	}
+
+	else if (targetCase.getPiece().getType() == Piece::rook || targetCase.getPiece().getType() == Piece::king)
+	{
+		Piece* piece{ targetCase.getCase().get() };
+
+		switch (targetCase.getPiece().getType())
+		{
+		case Piece::rook:
+		{
+			auto* rook{ dynamic_cast<Rook*>(piece) };
+			if (rook)
+				rook->setHasMoved(true);
+			break;
+		}
+		case Piece::king:
+		{
+			auto* king{ dynamic_cast<King*>(piece) };
+			if (king)
+				king->setHasMoved(true);
+			break;
+		}
+		default:
+			throw std::runtime_error{ "Unexpected Type" };
+		}
 
 	}
 }
@@ -146,6 +171,7 @@ const std::pair<size_t, size_t> Board::getKingPosition(Piece::Color kingColor) c
 	if (!kingFound)
 		throw std::runtime_error{ "No king found" };
 
+	return { boardSettings::boardSize, boardSettings::boardSize }; // error value
 }
 
 bool Board::isCheckMate(Piece::Color kingColor)
@@ -230,20 +256,15 @@ std::pair<size_t, size_t> Board::getAttackingPieceCoord(Piece::Color attackingPi
 					int pawnDirection = (piece->getColor() == Piece::white) ? -1 : 1;
 
 					// Vérifie si le pion peut capturer le roi (diagonale avant uniquement)
-					if ((y + pawnDirection == kingPosition.first) &&
-						(abs(static_cast<int>(x) - static_cast<int>(kingPosition.second)) == 1))
-					{
+					if ((y + pawnDirection == kingPosition.first) && (abs(static_cast<int>(x) - static_cast<int>(kingPosition.second)) == 1))
 						return { y, x };
-					}
 				}
 				// Pour toutes les pièces sauf les rois
-				else if (!dynamic_cast<King*>(piece))
+				else if (piece && piece->getType() != Piece::king)
 				{
 					// Utilise la méthode générique de vérification de mouvement
 					if (piece->canMoveTo(*this, threatPosition, kingPosition))
-					{
 						return { y, x };
-					}
 				}
 			}
 		}
@@ -312,14 +333,14 @@ bool Board::isSelfCheck(std::pair<size_t, size_t> startCase, std::pair<size_t, s
 
 }
 
-bool Board::canCastle(Piece::Color playerTurn) const
+bool Board::canCastleLeft(Piece::Color playerTurn) const
 {
-	const size_t y{ playerTurn == Piece::white ? 7 : 0 };
-	const size_t kingX{ 4 };
-	const size_t leftRookX{ 0 };
-	const size_t rightRookX{ 7 };
+	const size_t y{ static_cast<size_t>(playerTurn == Piece::white ? 7 : 0) };
+	constexpr size_t kingX{ 4 };
+	constexpr size_t leftRookX{ 0 };
+	constexpr size_t rightRookX{ 7 };
 
-	King* king{ dynamic_cast<King*>(m_board[y][kingX].getCase().get()) };
+	auto* king{ dynamic_cast<King*>(m_board[y][kingX].getCase().get()) };
 
 	if (!king || king->getHasMoved())
 		return false;
@@ -343,20 +364,74 @@ bool Board::canCastle(Piece::Color playerTurn) const
 				}
 			}
 
-			Rook* leftRook{ dynamic_cast<Rook*>(m_board[y][leftRookX].getCase().get()) };
+			assert(y < boardSettings::boardSize);
+			auto* leftRook{ dynamic_cast<Rook*>(m_board[y][leftRookX].getCase().get()) };
 
 			if (leftRook && !leftRook->getHasMoved())
 				return true;
 		}
+	return false;
+}
 
-		// Right side check
-		if (m_board[y][5].isEmpty() && m_board[y][6].isEmpty())
+bool Board::canCastleRight(Piece::Color playerTurn) const
+{
+	const size_t y{ static_cast<size_t>(playerTurn == Piece::white ? 7 : 0) };
+	constexpr size_t kingX{ 4 };
+	constexpr size_t leftRookX{ 0 };
+	constexpr size_t rightRookX{ 7 };
+
+	auto* king{ dynamic_cast<King*>(m_board[y][kingX].getCase().get()) };
+
+	if (!king || king->getHasMoved())
+		return false;
+
+	// Right side check
+	if (m_board[y][5].isEmpty() && m_board[y][6].isEmpty())
+	{
+		for (size_t attackerY{}; attackerY < boardSettings::boardSize; attackerY++)
 		{
-			Rook* rightRook{ dynamic_cast<Rook*>(m_board[y][rightRookX].getCase().get()) };
-
-			if (rightRook && !rightRook->getHasMoved())
-				return true;
+			for (size_t attackerX{}; attackerX < boardSettings::boardSize; attackerX++)
+			{
+				if (!m_board[attackerY][attackerX].isEmpty() && m_board[attackerY][attackerX].getPiece().getColor() != playerTurn)
+				{
+					for (size_t targetX{ 5 }; targetX < 7; targetX++)
+					{
+						if (m_board[attackerY][attackerX].getPiece().canMoveTo(*this, { attackerY, attackerX }, { y, targetX }))
+							return false;
+					}
+				}
+			}
 		}
 
+		assert(y < boardSettings::boardSize);
+		auto* rightRook{ dynamic_cast<Rook*>(m_board[y][rightRookX].getCase().get()) };
+
+		if (rightRook && !rightRook->getHasMoved())
+			return true;
+	}
 	return false;
+}
+
+void Board::castle(Piece::Color color, std::string_view castlingSide)
+{
+	const size_t y{ static_cast<size_t>(color == Piece::white ? 7 : 0) };
+	constexpr size_t kingX{ 4 };
+	constexpr size_t leftRookX{ 0 };
+	constexpr size_t rightRookX{ 7 };
+
+	std::unique_ptr<Piece>& king{ m_board[y][kingX].getCase() };
+	std::unique_ptr<Piece>& leftRook{ m_board[y][leftRookX].getCase() };
+	std::unique_ptr<Piece>& rightRook{ m_board[y][rightRookX].getCase() };
+
+	if (castlingSide == "oq") // Castling queen side
+	{
+		m_board[y][2].getCase() = std::move(king);
+		m_board[y][3].getCase() = std::move(leftRook);
+	}
+
+	else if (castlingSide == "oo") // Castling right side
+	{
+		m_board[y][6].getCase() = std::move(king);
+		m_board[y][5].getCase() = std::move(rightRook);
+	}
 }

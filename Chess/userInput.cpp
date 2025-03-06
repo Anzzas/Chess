@@ -1,6 +1,6 @@
 #include "userInput.h"
 
-std::pair<size_t, size_t> inputInitialCase(const Board& board, const Piece::Color playerColor)
+std::pair<size_t, size_t> inputInitialCase(Board& board, const Piece::Color playerColor)
 {
 	size_t x{};
 	size_t y{};
@@ -10,6 +10,18 @@ std::pair<size_t, size_t> inputInitialCase(const Board& board, const Piece::Colo
 
 		std::cout << "Select the piece you want to play: ";
 		std::cin >> choice;
+
+		if (choice == "oq" && board.canCastleLeft(playerColor))
+		{
+			board.castle(playerColor, choice);
+			return { 21, 21 }; // Sentinel value code for castling
+		}
+		else if (choice == "oo" && board.canCastleRight(playerColor))
+		{
+			board.castle(playerColor, choice);
+			return { 21, 21 }; // Sentinel value code for castling
+		}
+
 
 		if (!boardSettings::choiceToCoord.contains(choice))
 		{

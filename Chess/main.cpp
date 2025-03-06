@@ -12,6 +12,14 @@ int main()
 	while (true)
 	{
 		std::pair startCase{ inputInitialCase(board, playerTurn) };
+
+		if (startCase == std::pair{ 21, 21 }) // If player is castling
+		{
+
+			std::cout << "Castling\n\n";
+			continue;
+		}
+
 		std::pair targetCase{ inputTargetCase(board, playerTurn) };
 
 		if (targetCase == std::pair<size_t, size_t> {boardSettings::boardSize, boardSettings::boardSize})

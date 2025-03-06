@@ -4,6 +4,7 @@
 #include <iostream>
 #include <array>
 #include <utility>
+#include <cassert>
 
 class Board;
 
