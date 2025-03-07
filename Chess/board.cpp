@@ -412,7 +412,7 @@ bool Board::canCastleRight(Piece::Color playerTurn) const
 	return false;
 }
 
-void Board::castle(Piece::Color color, std::string_view castlingSide)
+std::pair<size_t, size_t> Board::castle(Piece::Color color, std::string_view castlingSide)
 {
 	const size_t y{ static_cast<size_t>(color == Piece::white ? 7 : 0) };
 	constexpr size_t kingX{ 4 };
@@ -427,11 +427,15 @@ void Board::castle(Piece::Color color, std::string_view castlingSide)
 	{
 		m_board[y][2].getCase() = std::move(king);
 		m_board[y][3].getCase() = std::move(leftRook);
+		return { y, 3 }; // returning Rook coords to verify check condition on opponent
 	}
 
 	else if (castlingSide == "oo") // Castling right side
 	{
 		m_board[y][6].getCase() = std::move(king);
 		m_board[y][5].getCase() = std::move(rightRook);
+		return { y, 5 };
 	}
+
+	throw std::runtime_error{ "Bad Castling" };
 }

@@ -83,7 +83,7 @@ public:
 	bool isSelfCheck(std::pair<size_t, size_t> startCase, std::pair<size_t, size_t> targetCase, Piece::Color playerTurn);
 	bool canCastleLeft(Piece::Color playerTurn) const;
 	bool canCastleRight(Piece::Color playerTurn) const;
-	void castle(Piece::Color color, std::string_view castlingSide);
+	std::pair<size_t, size_t> castle(Piece::Color color, std::string_view castlingSide);
 
 
 private:

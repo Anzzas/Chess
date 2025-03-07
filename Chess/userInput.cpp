@@ -7,21 +7,32 @@ std::pair<size_t, size_t> inputInitialCase(Board& board, const Piece::Color play
 	std::string choice{};
 	while (true)
 	{
-
 		std::cout << "Select the piece you want to play: ";
 		std::cin >> choice;
 
-		if (choice == "oq" && board.canCastleLeft(playerColor))
+		// Castling CHECK
+		if (choice == "oq" || choice == "oo")
 		{
-			board.castle(playerColor, choice);
-			return { 21, 21 }; // Sentinel value code for castling
-		}
-		else if (choice == "oo" && board.canCastleRight(playerColor))
-		{
-			board.castle(playerColor, choice);
-			return { 21, 21 }; // Sentinel value code for castling
-		}
+			if (choice == "oq" && board.canCastleLeft(playerColor))
+			{
+				g_isCastling = true;
+				return board.castle(playerColor, choice);
+			}
+			else if (choice == "oo" && board.canCastleRight(playerColor))
+			{
+				g_isCastling = true;
+				return board.castle(playerColor, choice);
+			}
 
+			std::cout << "You cannot castle ";
+			if (choice == "oq")
+				std::cout << "left ";
+			else if (choice == "oo")
+				std::cout << "right ";
+
+			std::cout << "!\n\n";
+			continue;
+		}
 
 		if (!boardSettings::choiceToCoord.contains(choice))
 		{

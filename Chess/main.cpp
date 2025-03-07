@@ -12,34 +12,38 @@ int main()
 	while (true)
 	{
 		std::pair startCase{ inputInitialCase(board, playerTurn) };
+		std::pair<size_t, size_t> targetCase{};
 
-		if (startCase == std::pair{ 21, 21 }) // If player is castling
+		if (g_isCastling) // If player is castling
 		{
-
 			std::cout << "Castling\n\n";
-			continue;
+			targetCase = startCase; // Putting selected rook on targetCase for check/check mate verification
 		}
 
-		std::pair targetCase{ inputTargetCase(board, playerTurn) };
-
-		if (targetCase == std::pair<size_t, size_t> {boardSettings::boardSize, boardSettings::boardSize})
+		if (!g_isCastling)
 		{
-			std::cout << "This Piece cannot defend the king. Please choose another piece.\n\n";
-			continue;
-		}
 
-		const Piece& choosenPiece{ board.getBoard()[startCase.first][startCase.second].getPiece() };
+			targetCase = inputTargetCase(board, playerTurn);
 
-		if (!choosenPiece.canMoveTo(board, startCase, targetCase))
-		{
-			std::cout << choosenPiece << " cannot move here!\n\n";
-			continue;
-		}
+			if (targetCase == std::pair<size_t, size_t> {boardSettings::boardSize, boardSettings::boardSize})
+			{
+				std::cout << "This Piece cannot defend the king. Please choose another piece.\n\n";
+				continue;
+			}
 
-		if (board.isSelfCheck(startCase, targetCase, playerTurn)) // if player self check, he has to try again
-		{
-			std::cout << "You cannot do this move (self check) !\n\n";
-			continue;
+			const Piece& choosenPiece{ board.getBoard()[startCase.first][startCase.second].getPiece() };
+
+			if (!choosenPiece.canMoveTo(board, startCase, targetCase))
+			{
+				std::cout << choosenPiece << " cannot move here!\n\n";
+				continue;
+			}
+
+			if (board.isSelfCheck(startCase, targetCase, playerTurn)) // if player self check, he has to try again
+			{
+				std::cout << "You cannot do this move (self check) !\n\n";
+				continue;
+			}
 		}
 
 		if (board.isCheckMate(board.getBoard()[targetCase.first][targetCase.second].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
@@ -66,5 +70,8 @@ int main()
 			break;
 		}
 		std::cout << " turn!\n\n";
+
+		if (g_isCastling)
+			g_isCastling = false; // Reseting castling state
 	}
  }
