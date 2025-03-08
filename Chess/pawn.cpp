@@ -3,12 +3,10 @@
 
 bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const
 {
-	const size_t x_Start{ startPosition.second };
-	const size_t y_Start{ startPosition.first };
 
-	const Case& TargetCase{ board.getBoard()[targetPosition.first][targetPosition.second] };
-	const size_t x_Target{ targetPosition.second };
-	const size_t y_Target{ targetPosition.first };
+	const auto [y_Start, x_Start] = startPosition;
+	const auto [y_Target, x_Target] = targetPosition;
+	const Case& TargetCase{ board.getBoard()[y_Target][x_Target] };
 
 	if (TargetCase.isEmpty())
 	{
@@ -26,7 +24,7 @@ bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
 				return false;
 		}
 
-		else if (m_color == Piece::black)
+		else // If it's a BLACK piece
 		{
 			if (y_Start == 1 && (y_Target == y_Start + 1 || y_Target == y_Start + 2) && x_Target == x_Start && TargetCase.isEmpty())
 				return true;

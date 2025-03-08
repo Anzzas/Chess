@@ -1,17 +1,13 @@
 #include "rook.h"
 #include "board.h"
 
-bool Rook::canMoveTo(const Board& board, std::pair<size_t, size_t> startPosition, std::pair<size_t, size_t> targetPosition) const
+bool Rook::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const
 {
 	// Starting case coordinates
-	const size_t x_Start{ startPosition.second };
-	const size_t y_Start{ startPosition.first };
+	const auto [y_Start, x_Start] = startPosition;
 
 	// Target case coordinates 
-	const Case& TargetCase{ board.getBoard()[targetPosition.first][targetPosition.second] };
-	const size_t x_Target{ targetPosition.second };
-	const size_t y_Target{ targetPosition.first };
-
+	const auto [y_Target, x_Target] = targetPosition;
 
 	// Y axis
 	if (y_Target != y_Start && x_Target == x_Start)

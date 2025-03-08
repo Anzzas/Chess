@@ -3,7 +3,7 @@
 
 int main()
 {
-	std::cout << "\tChess Game\n";
+	std::cout << "\tChess Game\n\n";
 	
 	Board board{};
 	std::cout << board << "\n\n";
@@ -11,42 +11,48 @@ int main()
 
 	while (true)
 	{
-		std::pair startCase{ inputInitialCase(board, playerTurn) };
-		std::pair<size_t, size_t> targetCase{};
+		const auto startCase{ inputInitialCase(board, playerTurn) };
+		const auto [startCaseY, startCaseX] = startCase;
+
+		std::optional<std::pair<size_t, size_t>> targetCase{ {} };
+		auto [targetCaseY, targetCaseX] = *targetCase;
 
 		if (g_isCastling) // If player is castling
 		{
 			std::cout << "Castling\n\n";
 			targetCase = startCase; // Putting selected rook on targetCase for check/check mate verification
+			targetCaseY = targetCase->first;
+			targetCaseX = targetCase->second;
 		}
 
-		if (!g_isCastling)
+		else
 		{
-
 			targetCase = inputTargetCase(board, playerTurn);
 
-			if (targetCase == std::pair<size_t, size_t> {boardSettings::boardSize, boardSettings::boardSize})
+			if (!targetCase)
 			{
 				std::cout << "This Piece cannot defend the king. Please choose another piece.\n\n";
 				continue;
 			}
 
-			const Piece& choosenPiece{ board.getBoard()[startCase.first][startCase.second].getPiece() };
+			targetCaseY = targetCase->first;
+			targetCaseX = targetCase->second;
 
-			if (!choosenPiece.canMoveTo(board, startCase, targetCase))
+			const auto& choosenPiece{ board.getBoard()[startCaseY][startCaseX].getPiece() };
+			if (!choosenPiece.canMoveTo(board, startCase, *targetCase))
 			{
 				std::cout << choosenPiece << " cannot move here!\n\n";
 				continue;
 			}
 
-			if (board.isSelfCheck(startCase, targetCase, playerTurn)) // if player self check, he has to try again
+			if (board.isSelfCheck(startCase, *targetCase, playerTurn)) // if player self check, he has to try again
 			{
 				std::cout << "You cannot do this move (self check) !\n\n";
 				continue;
 			}
 		}
 
-		if (board.isCheckMate(board.getBoard()[targetCase.first][targetCase.second].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
+		if (board.isCheckMate(board.getBoard()[targetCaseY][targetCaseX].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
 		{
 			std::cout << "CHECK MATE !\n\n";
 			return 0;
@@ -54,10 +60,11 @@ int main()
 
 		std::cout << board << "\n\n";
 
-		if (board.isKingInCheck(board.getBoard()[targetCase.first][targetCase.second].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
+		if (board.isKingInCheck(board.getBoard()[targetCaseY][targetCaseX].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
 			std::cout << "CHECK !\n\n";
 
-		playerTurn = playerTurn == Piece::white ? Piece::black : Piece::white;
+		// Changing player turn to the opposite color after the turn is finished
+		playerTurn == Piece::white ? playerTurn = Piece::black : playerTurn = Piece::white;
 
 		std::cout << "It is ";
 		switch (playerTurn)

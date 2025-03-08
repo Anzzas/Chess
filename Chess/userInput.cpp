@@ -70,10 +70,8 @@ std::pair<size_t, size_t> inputInitialCase(Board& board, const Piece::Color play
 	return std::pair{ y, x };
 }
 
-std::pair<size_t, size_t> inputTargetCase(const Board& board, const Piece::Color playerColor)
+std::optional<std::pair<size_t, size_t>> inputTargetCase(const Board& board, const Piece::Color playerColor)
 {
-	size_t x{};
-	size_t y{};
 	std::string choice{};
 	while (true)
 	{
@@ -85,11 +83,9 @@ std::pair<size_t, size_t> inputTargetCase(const Board& board, const Piece::Color
 			std::cout << "Enter a valid case !\n\n";
 			continue;
 		}
-
-		x = static_cast<size_t>(boardSettings::choiceToCoord.find(choice)->second.second);
-		y = static_cast<size_t>(boardSettings::choiceToCoord.find(choice)->second.first);
-		const std::pair<size_t, size_t> targetCoord{ y, x };
-		const Case& targetCase = board.getBoard()[y][x];
+		const auto targetCoord{boardSettings::choiceToCoord.find(choice)->second};
+		const auto [targetY, targetX] = targetCoord;
+		const Case& targetCase = board.getBoard()[targetY][targetX];
 
 		if (!targetCase.isEmpty() && targetCase.getPiece().getColor() == playerColor)
 		{
@@ -109,24 +105,31 @@ std::pair<size_t, size_t> inputTargetCase(const Board& board, const Piece::Color
 
 		else if (board.isKingInCheck(playerColor))
 		{
-			std::pair kingPosition{ board.getKingPosition(playerColor) };
-			std::pair attackerPosition{ board.getAttackingPieceCoord(playerColor == Piece::black ? Piece::white : Piece::black) };
-			std::vector<std::pair<size_t, size_t>> path = board.findAttackPath(attackerPosition, kingPosition);
+			const auto kingPosition{ board.getKingPosition(playerColor) };
+			const auto attackerPosition{ board.getAttackingPieceCoord(playerColor == Piece::black ? Piece::white : Piece::black) }; 
 
+			if (!attackerPosition)
+				throw std::runtime_error{ "King in check but no attacker found !" };
+
+			// Getting the attack path
+			const auto path = board.findAttackPath(*attackerPosition, kingPosition);
+
+			// Checking if the target selected case is the King attacker (meaning the player decide to take that piece)
 			if (targetCoord == attackerPosition)
 				return targetCoord;
 
-			for (const auto& e : path)
+			// Checking if the target selected case is corresponding to one of the attackPath (meaning it will block the king attack and cover him)
+			for (const auto& attackedCase : path)
 			{
-				if (targetCoord == e)
+				if (targetCoord == attackedCase)
 					return targetCoord;
 			}
-
-			return std::pair<size_t, size_t> {boardSettings::boardSize, boardSettings::boardSize}; // Sentinel value in order if the selected piece can't defend the KING
+			return {}; // Returning nullopt because used move do not defend the king currently in check
 		}
 
 		else if (targetCase.isEmpty() || targetCase.getPiece().getColor() != playerColor)
-			break;
+			return std::pair{ targetY, targetX };
+
+		throw std::runtime_error{ "Bad Input" };
 	}
-	return std::pair{ y, x };
 }

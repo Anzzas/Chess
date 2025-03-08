@@ -6,6 +6,6 @@ inline bool g_isCastling{};
 
 std::pair<size_t, size_t> inputInitialCase(Board& board, const Piece::Color playerColor);
 
-std::pair<size_t, size_t> inputTargetCase(const Board& board, const Piece::Color playerColor);
+std::optional<std::pair<size_t, size_t>> inputTargetCase(const Board& board, const Piece::Color playerColor);
 
 #endif

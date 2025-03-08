@@ -6,6 +6,7 @@
 #include <map>
 #include <algorithm>
 #include <vector>
+#include <optional>
 
 namespace boardSettings
 {
@@ -75,16 +76,15 @@ public:
 	const Point2D& getBoard() const;
 	friend std::ostream& operator<< (std::ostream& out, const Board& board);
 	void movePiece(const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition);
-	bool isKingInCheck(Piece::Color kingColor, std::pair<size_t, size_t> simulatePosition = {10, 10}) const; // Default simulatePosition value is a sentinel value and won't be used. Only to check a specific location check for KING
 	const std::pair<size_t, size_t> getKingPosition(Piece::Color kingColor) const;
-	bool isCheckMate(Piece::Color kingColor);
-	std::pair<size_t, size_t> getAttackingPieceCoord(Piece::Color attackingPieceColor) const;
+	const std::pair<size_t, size_t> castle(const Piece::Color color, std::string_view castlingSide);
+	std::optional<std::pair<size_t, size_t>> getAttackingPieceCoord(Piece::Color attackingPieceColor) const;
 	std::vector<std::pair<size_t, size_t>> findAttackPath(std::pair<size_t, size_t> attackerPos, std::pair<size_t, size_t> kingPos) const;
-	bool isSelfCheck(std::pair<size_t, size_t> startCase, std::pair<size_t, size_t> targetCase, Piece::Color playerTurn);
-	bool canCastleLeft(Piece::Color playerTurn) const;
-	bool canCastleRight(Piece::Color playerTurn) const;
-	std::pair<size_t, size_t> castle(Piece::Color color, std::string_view castlingSide);
-
+	bool isCheckMate(Piece::Color kingColor);
+	bool isSelfCheck(const std::pair<size_t, size_t> startCase, const std::pair<size_t, size_t> targetCase, const Piece::Color playerTurn);
+	bool canCastleLeft(const Piece::Color playerTurn) const;
+	bool canCastleRight(const Piece::Color playerTurn) const;
+	bool isKingInCheck(const Piece::Color kingColor, const std::optional<std::pair<size_t, size_t>> simulatePosition = std::nullopt) const;
 
 private:
 
