@@ -12,9 +12,12 @@ bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
 	{
 		if (m_color == Piece::white)
 		{
-			// Moving 2 cases at starting case
-			if (y_Start == 6 && (y_Target == y_Start - 1 || y_Target == y_Start - 2) && x_Target == x_Start && TargetCase.isEmpty())
+			// Moving 2 cases at starting Pawn case (for white Y = 6)
+			if (y_Start == 6 && y_Target == y_Start - 2 && x_Target == x_Start)
+			{
+				setHasMovedTwoSquares(true);
 				return true;
+			}
 
 			// Moving 1 case
 			else if (y_Target == y_Start - 1 && x_Target == x_Start)
@@ -26,6 +29,7 @@ bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
 
 		else // If it's a BLACK piece
 		{
+			// Moving 2 cases at starting case OR moving by 1 case
 			if (y_Start == 1 && (y_Target == y_Start + 1 || y_Target == y_Start + 2) && x_Target == x_Start && TargetCase.isEmpty())
 				return true;
 
@@ -50,4 +54,30 @@ bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
 	}
 
 	return false;
+}
+
+void Pawn::resetAllPawnFlags(const Board& b, Piece::Color color)
+{
+	const auto& board{ b.getBoard() };
+
+	for (size_t y = 0; y < boardSettings::boardSize; y++)
+	{
+		for (size_t x = 0; x < boardSettings::boardSize; x++)
+		{
+			if (board[y][x].getPiece().getType() == Piece::pawn && board[y][x].getPiece().getColor() == color)
+			{
+				dynamic_cast<Pawn*>(board[y][x].getCase().get())->m_hasMovedTwoSquares = false;
+			}
+		}
+	}
+}
+
+const bool& Pawn::hasMovedTwoSquares() const
+{
+	return m_hasMovedTwoSquares;
+}
+
+void Pawn::setHasMovedTwoSquares(bool state)
+{
+	m_hasMovedTwoSquares = state;
 }
