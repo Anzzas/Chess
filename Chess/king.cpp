@@ -9,26 +9,20 @@ bool King::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
     // Target case coordinates 
     const auto [y_Target, x_Target] = targetPosition;
 
-    // Verifying the target case is on a valid case
-    if (x_Target >= boardSettings::boardSize || y_Target >= boardSettings::boardSize) {
-        return false;
-    }
-
-    // Verifying if the target case is empty or contains an ennemy piece
-    const Case& TargetCase{ board.getBoard()[y_Target][x_Target] };
-    if (!TargetCase.isEmpty() && TargetCase.getPiece().getColor() == m_color)
-        return false;
-
-    else if (!TargetCase.isEmpty() && TargetCase.getPiece().getColor() != m_color)
-        return true;
-
     // Verifying the king doesn't put himself in Check
     if (!board.isKingInCheck(m_color, targetPosition))
     {
-        // Verifying the move is one case for every direction
-        if (std::abs(static_cast<int>(y_Target) - static_cast<int>(y_Start)) <= 1 &&
-            std::abs(static_cast<int>(x_Target) - static_cast<int>(x_Start)) <= 1 &&
-            (y_Target != y_Start || x_Target != x_Start)) 
+        // Calculate distances between start and target positions
+        const int vertical_distance{ std::abs(static_cast<int>(y_Target) - static_cast<int>(y_Start)) };
+        const int horizontal_distance{ std::abs(static_cast<int>(x_Target) - static_cast<int>(x_Start)) };
+
+        // Check if the positions are different (king is actually moving)
+        const bool is_moving{ (y_Target != y_Start || x_Target != x_Start) };
+
+        // Kings can move exactly one square in any direction
+        const bool is_valid_king_move{ (vertical_distance <= 1 && horizontal_distance <= 1 && is_moving) };
+
+        if (is_valid_king_move)
             return true;
     }
     return false;

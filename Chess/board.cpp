@@ -318,21 +318,27 @@ bool Board::isSelfCheck(const std::pair<size_t, size_t> startCase, const std::pa
 	auto tempStartCase{ PieceFactory::createPiece(m_board[startCaseY][startCaseX].getPiece().getType(), m_board[startCaseY][startCaseX].getPiece().getColor()) };
 	std::unique_ptr<Piece> tempTargetCase{};
 
+	// If the targetCase is not empty then create a copy of it to restore it later
+	if(!m_board[targetCaseY][targetCaseX].isEmpty())
+	tempTargetCase = PieceFactory::createPiece(m_board[targetCaseY][targetCaseX].getPiece().getType(), m_board[targetCaseY][targetCaseX].getPiece().getColor());
+
+
 	movePiece(startCase, targetCase); // Move the piece normally
 
-	if (!isKingInCheck(playerTurn)) // If player own king is not self checked then everything is OK and keep the current move
-		return false;
-
-	if (!m_board[targetCaseY][targetCaseX].isEmpty()) // If the targetCase is not empty then create a copy of it to restore it later
-		tempTargetCase = PieceFactory::createPiece(m_board[targetCaseY][targetCaseX].getPiece().getType(), m_board[targetCaseY][targetCaseX].getPiece().getColor());
-
-	// Put back the moved piece from targetCase to startCase
-	m_board[startCaseY][startCaseX].getCase() = std::move(tempStartCase);
-
-	if (tempTargetCase) // if targetCase was not empty, then restoring the previous piece. Else leave it empty
+	if (!isKingInCheck(playerTurn)) // If player own king is not self checked after the move, then everything is OK
+	{
+		// Putting back the pieces to their original cases
+		m_board[startCaseY][startCaseX].getCase() = std::move(tempStartCase);
 		m_board[targetCaseY][targetCaseX].getCase() = std::move(tempTargetCase);
+		return false;
+	}
 
-	return true; // If that move put the player himself in check, restore last position and make the player try again
+	// Else, the king after the move is in fact in check
+	// Putting back the moved piece to their original cases
+	m_board[startCaseY][startCaseX].getCase() = std::move(tempStartCase);
+	m_board[targetCaseY][targetCaseX].getCase() = std::move(tempTargetCase);
+
+	return true; // If that move put the player himself in check, make the player try again
 }
 
 bool Board::canCastleLeft(const Piece::Color playerTurn) const

@@ -70,7 +70,7 @@ std::pair<size_t, size_t> inputInitialCase(Board& board, const Piece::Color play
 	return std::pair{ y, x };
 }
 
-std::optional<std::pair<size_t, size_t>> inputTargetCase(const Board& board, const Piece::Color playerColor)
+std::optional<std::pair<size_t, size_t>> inputTargetCase(Board& board, const std::pair<size_t, size_t> startCase, const Piece::Color playerColor)
 {
 	std::string choice{};
 	while (true)
@@ -124,6 +124,14 @@ std::optional<std::pair<size_t, size_t>> inputTargetCase(const Board& board, con
 				if (targetCoord == attackedCase)
 					return targetCoord;
 			}
+
+			const auto [startCaseY, startCaseX] = startCase;
+			const auto& startPiece{ board.getBoard()[startCaseY][startCaseX].getPiece() };
+
+			if (startPiece.getType() == Piece::king && startPiece.canMoveTo(board, startCase, targetCoord))
+				return targetCoord;
+
+			
 			return {}; // Returning nullopt because used move do not defend the king currently in check
 		}
 

@@ -27,7 +27,7 @@ int main()
 
 		else
 		{
-			targetCase = inputTargetCase(board, playerTurn);
+			targetCase = inputTargetCase(board, startCase, playerTurn);
 
 			if (!targetCase)
 			{
@@ -50,7 +50,11 @@ int main()
 				std::cout << "You cannot do this move (self check) !\n\n";
 				continue;
 			}
+
+			board.movePiece(startCase, *targetCase);
 		}
+
+		std::cout << board << "\n\n";
 
 		if (board.isCheckMate(board.getBoard()[targetCaseY][targetCaseX].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
 		{
@@ -58,9 +62,7 @@ int main()
 			return 0;
 		}
 
-		std::cout << board << "\n\n";
-
-		if (board.isKingInCheck(board.getBoard()[targetCaseY][targetCaseX].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
+		else if (board.isKingInCheck(board.getBoard()[targetCaseY][targetCaseX].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
 			std::cout << "CHECK !\n\n";
 
 		// Changing player turn to the opposite color after the turn is finished
