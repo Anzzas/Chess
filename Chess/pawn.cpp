@@ -8,50 +8,45 @@ bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
 	const auto [y_Target, x_Target] = targetPosition;
 	const Case& TargetCase{ board.getBoard()[y_Target][x_Target] };
 
+	const int forwardDirection = (m_color == Piece::white) ? -1 : 1;
+	const int startingRank = (m_color == Piece::white) ? 6 : 1;
+
 	if (TargetCase.isEmpty())
 	{
-		if (m_color == Piece::white)
+		for (auto offsetX : {-1, 1})
 		{
-			// Moving 2 cases at starting Pawn case (for white Y = 6)
-			if (y_Start == 6 && y_Target == y_Start - 2 && x_Target == x_Start)
+			// EN-PASSANT CHECK
+			// Checking if there's a piece at the RIGHT and if this piece is a Pawn of the opposite color
+			if (x_Start + offsetX >= 0 && x_Start + offsetX < boardSettings::boardSize)
 			{
-				setHasMovedTwoSquares(true);
-				return true;
+				const auto& adjacentCase{ board.getBoard()[y_Start][x_Start + offsetX] };
+
+				if (!adjacentCase.isEmpty() && adjacentCase.getPiece().getType() == Piece::pawn && adjacentCase.getPiece().getColor() != m_color)
+				{
+					// Then checking if this Pawn has moved two squares forward to check if we can take by "en-passant"
+					if (dynamic_cast<Pawn*>(adjacentCase.getCase().get())->hasMovedTwoSquares() && (y_Target == y_Start + forwardDirection && x_Target == x_Start + offsetX))
+						return true;
+				}
 			}
-
-			// Moving 1 case
-			else if (y_Target == y_Start - 1 && x_Target == x_Start)
-				return true;
-
-			else
-				return false;
 		}
 
-		else // If it's a BLACK piece
+		// Moving 2 cases FORWARD at starting Pawn case
+		if (y_Start == startingRank && y_Target == y_Start + (forwardDirection * 2) && x_Target == x_Start)
 		{
-			// Moving 2 cases at starting case OR moving by 1 case
-			if (y_Start == 1 && (y_Target == y_Start + 1 || y_Target == y_Start + 2) && x_Target == x_Start && TargetCase.isEmpty())
-				return true;
-
-			if (y_Target == y_Start + 1 && x_Target == x_Start)
-				return true;
-
-			else
-				return false;
+			setHasMovedTwoSquares(true);
+			return true;
 		}
+
+		// Moving by 1 case
+		else if (y_Target == y_Start + forwardDirection && x_Target == x_Start)
+			return true;
+
+		return false;
 	}
 
 	// If TargetCase is NOT empty, verifying if can take in diagonal
-	if (m_color == Piece::white)
-	{
-		if (y_Target == y_Start - 1 && (x_Target == x_Start + 1 || x_Target == x_Start - 1))
-			return true;
-	}
-	else // If it's a BLACK piece
-	{
-		if (y_Target == y_Start + 1 && (x_Target == x_Start + 1 || x_Target == x_Start - 1))
-			return true;
-	}
+	if (y_Target == y_Start + forwardDirection && (x_Target == x_Start + 1 || x_Target == x_Start - 1))
+		return true;
 
 	return false;
 }
@@ -64,7 +59,7 @@ void Pawn::resetAllPawnFlags(const Board& b, Piece::Color color)
 	{
 		for (size_t x = 0; x < boardSettings::boardSize; x++)
 		{
-			if (board[y][x].getPiece().getType() == Piece::pawn && board[y][x].getPiece().getColor() == color)
+			if (!board[y][x].isEmpty() && board[y][x].getPiece().getType() == Piece::pawn && board[y][x].getPiece().getColor() == color)
 			{
 				dynamic_cast<Pawn*>(board[y][x].getCase().get())->m_hasMovedTwoSquares = false;
 			}
@@ -77,7 +72,7 @@ const bool& Pawn::hasMovedTwoSquares() const
 	return m_hasMovedTwoSquares;
 }
 
-void Pawn::setHasMovedTwoSquares(bool state)
+void Pawn::setHasMovedTwoSquares(bool state) const
 {
 	m_hasMovedTwoSquares = state;
 }

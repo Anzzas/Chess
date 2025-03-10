@@ -82,5 +82,8 @@ int main()
 
 		if (g_isCastling)
 			g_isCastling = false; // Reseting castling state
+
+		// Reseting en-passant flags of the next player to play
+		//Pawn::resetAllPawnFlags(board, playerTurn);
 	}
  }
