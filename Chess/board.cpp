@@ -35,6 +35,17 @@ void Board::movePiece(const std::pair<size_t, size_t> startPosition, const std::
 
 	targetCase.getCase() = std::move(startCase.getCase());
 
+	// For EN-PASSANT
+	if (targetCase.getPiece().getType() == Piece::pawn && dynamic_cast<Pawn*>(targetCase.getCase().get())->hasUsedEnPassant())
+	{
+		const int direction{ targetCase.getPiece().getColor() == Piece::white ? 1 : -1 };
+		const int newY{ static_cast<int>(targetPositionY) + direction };
+
+		m_board[static_cast<size_t>(newY)][targetPositionX].getCase().reset();
+		dynamic_cast<Pawn*>(targetCase.getCase().get())->setHasUsedEnPassant(false);
+		return;
+	}
+
 	// Promotion check. If the moved piece is of type Pawn and on Y = 0 (for WHITE) OR Y = 7 (for BLACK), then allow promotion
 	if (targetCase.getPiece().getType() == Piece::pawn && ((targetCase.getPiece().getColor() == Piece::white && targetPositionY == 0) || (targetCase.getPiece().getColor() == Piece::black && targetPositionY == 7)))
 	{
@@ -316,6 +327,14 @@ bool Board::isSelfCheck(const std::pair<size_t, size_t> startCase, const std::pa
 	// Simulating move to verify is the player don't put himself in check
 	// Getting a copy of the starting case before moving them and later verifying if targetCase was not empty to get also a copy
 	auto tempStartCase{ PieceFactory::createPiece(m_board[startCaseY][startCaseX].getPiece().getType(), m_board[startCaseY][startCaseX].getPiece().getColor()) };
+
+	// Special case for Pawn (copying a specific variable)
+	if (tempStartCase->getType() == Piece::pawn)
+	{
+		dynamic_cast<Pawn*>(tempStartCase.get())->setHasMovedTwoSquares(dynamic_cast<Pawn*>(m_board[startCaseY][startCaseX].getCase().get())->hasMovedTwoSquares());
+		dynamic_cast<Pawn*>(tempStartCase.get())->setHasUsedEnPassant(dynamic_cast<Pawn*>(m_board[startCaseY][startCaseX].getCase().get())->hasUsedEnPassant());
+	}
+
 	std::unique_ptr<Piece> tempTargetCase{};
 
 	// If the targetCase is not empty then create a copy of it to restore it later

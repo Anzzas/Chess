@@ -13,6 +13,8 @@ public:
 	static void resetAllPawnFlags(const Board& b, Piece::Color color);
 	const bool& hasMovedTwoSquares() const;
 	void setHasMovedTwoSquares(bool state) const;
+	const bool& hasUsedEnPassant() const;
+	void setHasUsedEnPassant(bool state) const;
 
 protected:
 
@@ -26,6 +28,7 @@ protected:
 private:
 
 	mutable bool m_hasMovedTwoSquares{};
+	mutable bool m_hasUsedEnPassant{};
 };
 
 #endif

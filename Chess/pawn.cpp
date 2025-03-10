@@ -25,7 +25,10 @@ bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
 				{
 					// Then checking if this Pawn has moved two squares forward to check if we can take by "en-passant"
 					if (dynamic_cast<Pawn*>(adjacentCase.getCase().get())->hasMovedTwoSquares() && (y_Target == y_Start + forwardDirection && x_Target == x_Start + offsetX))
+					{
+						m_hasUsedEnPassant = true;
 						return true;
+					}
 				}
 			}
 		}
@@ -75,4 +78,14 @@ const bool& Pawn::hasMovedTwoSquares() const
 void Pawn::setHasMovedTwoSquares(bool state) const
 {
 	m_hasMovedTwoSquares = state;
+}
+
+const bool& Pawn::hasUsedEnPassant() const
+{
+	return m_hasUsedEnPassant;
+}
+
+void Pawn::setHasUsedEnPassant(bool state) const
+{
+	m_hasUsedEnPassant = state;
 }
