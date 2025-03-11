@@ -1,5 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
+#include "boardState.h"
+#include "position.h"
 #include "case.h"
 #include "pieceFactory.h"
 #include <array>
@@ -34,7 +36,7 @@ namespace boardSettings
 
 using Point2D = std::array<std::array<Case, boardSettings::boardSize>, boardSettings::boardSize>;
 
-class Board
+class Board : public BoardState
 {
 public:
 

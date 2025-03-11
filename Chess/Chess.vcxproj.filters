@@ -86,5 +86,35 @@
     <ClInclude Include="userInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="boardState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="position.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="moveValidator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gameRules.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="moveExecutor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="move.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="moveHistory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamestate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chessNotation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="userInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

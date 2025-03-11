@@ -145,15 +145,25 @@
   <ItemGroup>
     <ClInclude Include="bishop.h" />
     <ClInclude Include="board.h" />
+    <ClInclude Include="boardState.h" />
     <ClInclude Include="case.h" />
+    <ClInclude Include="chessNotation.h" />
+    <ClInclude Include="gameRules.h" />
+    <ClInclude Include="gamestate.h" />
     <ClInclude Include="king.h" />
     <ClInclude Include="knight.h" />
+    <ClInclude Include="move.h" />
+    <ClInclude Include="moveExecutor.h" />
+    <ClInclude Include="moveHistory.h" />
+    <ClInclude Include="moveValidator.h" />
     <ClInclude Include="pawn.h" />
     <ClInclude Include="piece.h" />
     <ClInclude Include="pieceFactory.h" />
+    <ClInclude Include="position.h" />
     <ClInclude Include="queen.h" />
     <ClInclude Include="rook.h" />
     <ClInclude Include="userInput.h" />
+    <ClInclude Include="userInterface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
