@@ -1,7 +1,6 @@
 #ifndef MOVEHISTORY_H
 #define MOVEHISTORY_H
 #include <vector>
-#include "gamestate.h"
 
 class MoveHistory
 {

@@ -1,17 +1,18 @@
 #include "pawn.h"
-#include "board.h"
 
-bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const
+bool Pawn::canMoveTo(const BoardState& board, const Position startPosition, const Position targetPosition) const
 {
 
-	const auto [y_Start, x_Start] = startPosition;
-	const auto [y_Target, x_Target] = targetPosition;
-	const Case& TargetCase{ board.getBoard()[y_Target][x_Target] };
+	const auto y_Start{ startPosition.getY() };
+	const auto x_Start{ startPosition.getX() };
 
-	const int forwardDirection = (m_color == Piece::white) ? -1 : 1;
-	const int startingRank = (m_color == Piece::white) ? 6 : 1;
+	const auto y_Target{ targetPosition.getY() };
+	const auto x_Target{ targetPosition.getX() };
 
-	if (TargetCase.isEmpty())
+	const int forwardDirection = (m_color == white) ? -1 : 1;
+	const int startingRank = (m_color == white) ? 6 : 1;
+
+	if (board.isEmpty(targetPosition))
 	{
 		for (auto offsetX : {-1, 1})
 		{
@@ -19,12 +20,12 @@ bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
 			// Checking if there's a piece at the RIGHT and if this piece is a Pawn of the opposite color
 			if (x_Start + offsetX >= 0 && x_Start + offsetX < boardSettings::boardSize)
 			{
-				const auto& adjacentCase{ board.getBoard()[y_Start][x_Start + offsetX] };
+				const Piece* adjacentPiece{ board.getPieceAt({y_Start, x_Start + offsetX}) };
 
-				if (!adjacentCase.isEmpty() && adjacentCase.getPiece().getType() == Piece::pawn && adjacentCase.getPiece().getColor() != m_color)
+				if (adjacentPiece && adjacentPiece->getType() == pawn && adjacentPiece->getColor() != m_color)
 				{
 					// Then checking if this Pawn has moved two squares forward to check if we can take by "en-passant"
-					if (dynamic_cast<Pawn*>(adjacentCase.getCase().get())->hasMovedTwoSquares() && (y_Target == y_Start + forwardDirection && x_Target == x_Start + offsetX))
+					if (dynamic_cast<Pawn*>(adjacentPiece)->hasMovedTwoSquares() && (y_Target == y_Start + forwardDirection && x_Target == x_Start + offsetX))
 					{
 						m_hasUsedEnPassant = true;
 						return true;
@@ -54,17 +55,17 @@ bool Pawn::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPo
 	return false;
 }
 
-void Pawn::resetAllPawnFlags(const Board& b, Piece::Color color)
+void Pawn::resetAllPawnFlags(const BoardState& b, Color color)
 {
-	const auto& board{ b.getBoard() };
+	//const auto& board{ b.getBoard() };
 
 	for (size_t y = 0; y < boardSettings::boardSize; y++)
 	{
 		for (size_t x = 0; x < boardSettings::boardSize; x++)
 		{
-			if (!board[y][x].isEmpty() && board[y][x].getPiece().getType() == Piece::pawn && board[y][x].getPiece().getColor() == color)
+			if (!b.isEmpty({y, x}) && b.getPieceAt({y, x})->getType() == pawn && b.getPieceAt({y, x})->getColor() == color)
 			{
-				dynamic_cast<Pawn*>(board[y][x].getCase().get())->m_hasMovedTwoSquares = false;
+				dynamic_cast<Pawn*>(b.getPieceAt({y, x}))->m_hasMovedTwoSquares = false;
 			}
 		}
 	}

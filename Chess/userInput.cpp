@@ -1,6 +1,6 @@
 #include "userInput.h"
 
-std::pair<size_t, size_t> inputInitialCase(Board& board, const Piece::Color playerColor)
+Position inputInitialCase(Board& board, const Color playerColor)
 {
 	size_t x{};
 	size_t y{};
@@ -34,14 +34,14 @@ std::pair<size_t, size_t> inputInitialCase(Board& board, const Piece::Color play
 			continue;
 		}
 
-		if (!boardSettings::choiceToCoord.contains(choice))
+		if (!choiceToCoord.contains(choice))
 		{
 			std::cout << "Enter a valid case !\n\n";
 			continue;
 		}
 
-		x = static_cast<size_t>(boardSettings::choiceToCoord.find(choice)->second.second);
-		y = static_cast<size_t>(boardSettings::choiceToCoord.find(choice)->second.first);
+		x = choiceToCoord.find(choice)->second.getX();
+		y = choiceToCoord.find(choice)->second.getY();
 
 		if (board.getBoard()[y][x].isEmpty())
 		{
@@ -54,10 +54,10 @@ std::pair<size_t, size_t> inputInitialCase(Board& board, const Piece::Color play
 			std::cout << "Select one of your ";
 			switch (playerColor)
 			{
-			case Piece::white:
+			case white:
 				std::cout << "white";
 				break;
-			case Piece::black:
+			case black:
 				std::cout << "black";
 				break;
 			}
@@ -67,10 +67,10 @@ std::pair<size_t, size_t> inputInitialCase(Board& board, const Piece::Color play
 
 		break;
 	}
-	return std::pair{ y, x };
+	return { y, x };
 }
 
-std::optional<std::pair<size_t, size_t>> inputTargetCase(Board& board, const std::pair<size_t, size_t> startCase, const Piece::Color playerColor)
+std::optional<Position> inputTargetCase(BoardState& board, const Position startCase, const Color playerColor)
 {
 	std::string choice{};
 	while (true)
@@ -78,24 +78,24 @@ std::optional<std::pair<size_t, size_t>> inputTargetCase(Board& board, const std
 		std::cout << "Select the target case: ";
 		std::cin >> choice;
 
-		if (!boardSettings::choiceToCoord.contains(choice))
+		if (!choiceToCoord.contains(choice))
 		{
 			std::cout << "Enter a valid case !\n\n";
 			continue;
 		}
-		const auto targetCoord{boardSettings::choiceToCoord.find(choice)->second};
-		const auto [targetY, targetX] = targetCoord;
-		const Case& targetCase = board.getBoard()[targetY][targetX];
+		const auto targetCoord{choiceToCoord.find(choice)->second};
+		const auto targetY{ targetCoord.getY() };
+		const auto targetX{ targetCoord.getX() };
 
-		if (!targetCase.isEmpty() && targetCase.getPiece().getColor() == playerColor)
+		if (!board.isEmpty(targetCoord) && board.getPieceAt(targetCoord)->getColor() == playerColor)
 		{
 			std::cout << "There is already a ";
 			switch (playerColor)
 			{
-			case Piece::white:
+			case white:
 				std::cout << "white";
 				break;
-			case Piece::black:
+			case black:
 				std::cout << "black";
 				break;
 			}
@@ -106,7 +106,7 @@ std::optional<std::pair<size_t, size_t>> inputTargetCase(Board& board, const std
 		else if (board.isKingInCheck(playerColor))
 		{
 			const auto kingPosition{ board.getKingPosition(playerColor) };
-			const auto attackerPosition{ board.getAttackingPieceCoord(playerColor == Piece::black ? Piece::white : Piece::black) }; 
+			const auto attackerPosition{ board.getAttackingPieceCoord(playerColor == black ? white : black) }; 
 
 			if (!attackerPosition)
 				throw std::runtime_error{ "King in check but no attacker found !" };
@@ -125,10 +125,11 @@ std::optional<std::pair<size_t, size_t>> inputTargetCase(Board& board, const std
 					return targetCoord;
 			}
 
-			const auto [startCaseY, startCaseX] = startCase;
+			const auto startCaseY{ startCase.getY() };
+			const auto startCaseX{ startCase.getX() };
 			const auto& startPiece{ board.getBoard()[startCaseY][startCaseX].getPiece() };
 
-			if (startPiece.getType() == Piece::king && startPiece.canMoveTo(board, startCase, targetCoord))
+			if (startPiece.getType() == king && startPiece.canMoveTo(board, startCase, targetCoord))
 				return targetCoord;
 
 			
@@ -136,7 +137,7 @@ std::optional<std::pair<size_t, size_t>> inputTargetCase(Board& board, const std
 		}
 
 		else if (targetCase.isEmpty() || targetCase.getPiece().getColor() != playerColor)
-			return std::pair{ targetY, targetX };
+			return Position{ targetY, targetX };
 
 		throw std::runtime_error{ "Bad Input" };
 	}

@@ -5,30 +5,15 @@
 #include <array>
 #include <utility>
 #include <cassert>
+#include "enums.h"
+#include "position.h"
+#include "boardState.h"
 
-class Board;
+class BoardState;
 
 class Piece
 {
 public:
-
-	enum Color
-	{
-		white,
-		black,
-		max_colors
-	};
-
-	enum Type
-	{
-		pawn,
-		bishop,
-		knight,
-		rook,
-		queen,
-		king,
-		max_types
-	};
 
 	Piece() = delete;
 	virtual ~Piece() = default;
@@ -36,7 +21,7 @@ public:
 	const char& getSymbol() const;
 	const Color& getColor() const;
 	const Type& getType() const;
-	virtual bool canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const = 0;
+	virtual bool canMoveTo(const BoardState& board, const Position startPosition, const Position targetPosition) const = 0;
 
 	friend std::ostream& operator<< (std::ostream& out, const Color& color);
 	friend std::ostream& operator<< (std::ostream& out, const Piece& piece);

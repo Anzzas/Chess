@@ -1,6 +1,5 @@
 #ifndef MOVEEXECUTOR_H
 #define MOVEEXECUTOR_H
-#include "board.h"
 
 class MoveExecutor
 {

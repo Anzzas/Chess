@@ -1,13 +1,15 @@
 #include "bishop.h"
-#include "board.h"
 
-bool Bishop::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const
+bool Bishop::canMoveTo(const BoardState& board, const Position startPosition, const Position targetPosition) const
 {
 	// Starting case coordinates
-	const auto [y_Start, x_Start] = startPosition;
+	const auto y_Start{ startPosition.getY() };
+	const auto x_Start{ startPosition.getX() };
+
 
 	// Target case coordinates 
-	const auto [y_Target, x_Target] = targetPosition;
+	const auto y_Target{ targetPosition.getY() };
+	const auto x_Target{ targetPosition.getX() };
 
 
 	// Verifying diagonal movement
@@ -28,7 +30,7 @@ bool Bishop::canMoveTo(const Board& board, const std::pair<size_t, size_t> start
 			while (y < y_Target && x < x_Target)
 			{
 
-				if (!board.getBoard()[y][x].isEmpty())
+				if (!board.isEmpty({y, x}))
 					return false;
 				y++;
 				x++;
@@ -43,7 +45,7 @@ bool Bishop::canMoveTo(const Board& board, const std::pair<size_t, size_t> start
 
 			while (y < y_Target && x > x_Target)
 			{
-				if (!board.getBoard()[y][x].isEmpty())
+				if (!board.isEmpty({ y, x }))
 					return false;
 				y++;
 				x--;
@@ -58,7 +60,7 @@ bool Bishop::canMoveTo(const Board& board, const std::pair<size_t, size_t> start
 
 			while (y > y_Target && x < x_Target)
 			{
-				if (!board.getBoard()[y][x].isEmpty())
+				if (!board.isEmpty({ y, x }))
 					return false;
 				y--;
 				x++;
@@ -73,7 +75,7 @@ bool Bishop::canMoveTo(const Board& board, const std::pair<size_t, size_t> start
 
 			while (y > y_Target && x > x_Target)
 			{
-				if (!board.getBoard()[y][x].isEmpty())
+				if (!board.isEmpty({ y, x }))
 					return false;
 				y--;
 				x--;

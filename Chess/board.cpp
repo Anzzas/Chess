@@ -27,18 +27,19 @@ const Point2D& Board::getBoard() const
 	return m_board;
 }
 
-void Board::movePiece(const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition)
+void Board::movePiece(const Position startPosition, const Position targetPosition)
 {
-	const auto [targetPositionY, targetPositionX] = targetPosition;
+	const auto targetPositionY{ targetPosition.getY() };
+	const auto targetPositionX{ targetPosition.getX() };
 	Case& targetCase{ m_board[targetPositionY][targetPositionX] };
-	Case& startCase{ m_board[startPosition.first][startPosition.second] };
+	Case& startCase{ m_board[startPosition.getY()][startPosition.getX()]};
 
 	targetCase.getCase() = std::move(startCase.getCase());
 
 	// For EN-PASSANT
-	if (targetCase.getPiece().getType() == Piece::pawn && dynamic_cast<Pawn*>(targetCase.getCase().get())->hasUsedEnPassant())
+	if (targetCase.getPiece().getType() == pawn && dynamic_cast<Pawn*>(targetCase.getCase().get())->hasUsedEnPassant())
 	{
-		const int direction{ targetCase.getPiece().getColor() == Piece::white ? 1 : -1 };
+		const int direction{ targetCase.getPiece().getColor() == white ? 1 : -1 };
 		const int newY{ static_cast<int>(targetPositionY) + direction };
 
 		m_board[static_cast<size_t>(newY)][targetPositionX].getCase().reset();
@@ -47,9 +48,9 @@ void Board::movePiece(const std::pair<size_t, size_t> startPosition, const std::
 	}
 
 	// Promotion check. If the moved piece is of type Pawn and on Y = 0 (for WHITE) OR Y = 7 (for BLACK), then allow promotion
-	if (targetCase.getPiece().getType() == Piece::pawn && ((targetCase.getPiece().getColor() == Piece::white && targetPositionY == 0) || (targetCase.getPiece().getColor() == Piece::black && targetPositionY == 7)))
+	if (targetCase.getPiece().getType() == pawn && ((targetCase.getPiece().getColor() == white && targetPositionY == 0) || (targetCase.getPiece().getColor() == black && targetPositionY == 7)))
 	{
-		const size_t y(targetCase.getPiece().getColor() == Piece::white ? 0 : 7);
+		const size_t y(targetCase.getPiece().getColor() == white ? 0 : 7);
 
 		const auto& color{ m_board[y][targetPositionX].getPiece().getColor() };
 
@@ -99,20 +100,20 @@ void Board::movePiece(const std::pair<size_t, size_t> startPosition, const std::
 
 	/* If the moved piece is a King or a Rook, set bool hasMoved to TRUE to prevent castling on a specific side if one of the rook has moved
 	or to prevent castling completely if the king has moved */
-	else if (targetCase.getPiece().getType() == Piece::rook || targetCase.getPiece().getType() == Piece::king)
+	else if (targetCase.getPiece().getType() == rook || targetCase.getPiece().getType() == king)
 	{
 		Piece* piece{ targetCase.getCase().get() };
 
 		switch (targetCase.getPiece().getType())
 		{
-		case Piece::rook:
+		case rook:
 		{
 			auto* const rook{ dynamic_cast<Rook*>(piece) }; // Casting to get the methode setHasMoved() that belongs only to Rook and King classes
 			if (rook && !rook->getHasMoved())
 				rook->setHasMoved(true);
 			break;
 		}
-		case Piece::king:
+		case king:
 		{
 			auto* const king{ dynamic_cast<King*>(piece) }; // Casting to get the methode setHasMoved() that belongs only to Rook and King classes
 			if (king && !king->getHasMoved())
@@ -125,12 +126,13 @@ void Board::movePiece(const std::pair<size_t, size_t> startPosition, const std::
 	}
 }
 
-bool Board::isKingInCheck(const Piece::Color kingColor, const std::optional<std::pair<size_t, size_t>> simulatePosition) const
+bool Board::isKingInCheck(const Color kingColor, const std::optional<Position> simulatePosition) const
 {
 	// If a value is specified in arguments then checks for a specified position instead (to simulate a move)
 	// Else, Getting normal King's position
 	const auto kingPosition{ simulatePosition ? *simulatePosition : getKingPosition(kingColor)};
-	const auto [kingY, kingX] = kingPosition;
+	const auto kingY{ kingPosition.getY() };
+	const auto kingX{ kingPosition.getX() };
 
 	// Checks if any opponent piece can reach King's position
 	for (size_t y{}; y < boardSettings::boardSize; y++)
@@ -140,10 +142,10 @@ bool Board::isKingInCheck(const Piece::Color kingColor, const std::optional<std:
 			if (!m_board[y][x].isEmpty() && m_board[y][x].getPiece().getColor() != kingColor)
 			{
 				// Checking special case for Pawn behavior
-				if (m_board[y][x].getPiece().getType() == Piece::pawn) // Simulate King for the special case where the pawn can move 2 cases forward
+				if (m_board[y][x].getPiece().getType() == pawn) // Simulate King for the special case where the pawn can move 2 cases forward
 				{
 					// Checks only if the Pawn is attacking the king's position
-					int pawnDirection = (m_board[y][x].getPiece().getColor() == Piece::white) ? -1 : 1;
+					int pawnDirection = (m_board[y][x].getPiece().getColor() == white) ? -1 : 1;
 
 					// Pawn can only attack on forward diagonals
 					if ((static_cast<int>(y) + pawnDirection == static_cast<int>(kingY)) && (x + 1 == kingX || static_cast<int>(x) - 1 == static_cast<int>(kingX))) 
@@ -151,9 +153,9 @@ bool Board::isKingInCheck(const Piece::Color kingColor, const std::optional<std:
 				}
 
 				// For any other pieces except King
-				else if (m_board[y][x].getPiece().getType() != Piece::king)
+				else if (m_board[y][x].getPiece().getType() != king)
 				{
-					std::pair threatPosition{ y, x };
+					Position threatPosition{ y, x };
 					if (m_board[y][x].getPiece().canMoveTo(*this, threatPosition, kingPosition))
 						return true;
 				}
@@ -163,36 +165,11 @@ bool Board::isKingInCheck(const Piece::Color kingColor, const std::optional<std:
 	return false;
 }
 
-const std::pair<size_t, size_t> Board::getKingPosition(Piece::Color kingColor) const
-{
-	bool kingFound{};
-	for (size_t y{}; y < boardSettings::boardSize; y++)
-	{
-		auto found{ std::find_if(m_board[y].begin(), m_board[y].end(), [&](const Case& c)
-			{
-				if (c.isEmpty())
-					return false;
-
-			return c.getPiece().getType() == Piece::king && c.getPiece().getColor() == kingColor;
-			}) };
-
-		if (found != m_board[y].end())
-		{
-			size_t x{ static_cast<size_t>(std::distance(m_board[y].begin(), found)) };
-			return { y, x };
-		}
-	}
-
-	if (!kingFound)
-		throw std::runtime_error{ "No king found" };
-
-	return { boardSettings::boardSize, boardSettings::boardSize }; // error value
-}
-
-bool Board::isCheckMate(Piece::Color kingColor)
+bool Board::isCheckMate(Color kingColor)
 {
 	const auto kingPosition{ getKingPosition(kingColor) };
-	const auto [y_king, x_king] = kingPosition;
+	const auto y_king{ kingPosition.getY() };
+	const auto x_king{ kingPosition.getX() };
 
 	if (!isKingInCheck(kingColor))
 		return false;
@@ -215,14 +192,14 @@ bool Board::isCheckMate(Piece::Color kingColor)
 			if (newY >= 0 && newY < boardSettings::boardSize && newX >= 0 && newX < boardSettings::boardSize) 
 			{
 				// Vérifier si le roi peut se déplacer à cette position
-				if (m_board[y_king][x_king].getPiece().canMoveTo(*this, kingPosition, std::pair<size_t, size_t>{static_cast<size_t>(newY), static_cast<size_t>(newX)}))
+				if (m_board[y_king][x_king].getPiece().canMoveTo(*this, kingPosition, Position{static_cast<size_t>(newY), static_cast<size_t>(newX)}))
 					return false;  // Le roi peut s'échapper
 			}
 		}
 	}
 
 	// 2. Verifying if kingColor pieces can take the attacker out
-	const auto attackingPieceCoord(getAttackingPieceCoord(kingColor == Piece::white ? Piece::black : Piece::white));
+	const auto attackingPieceCoord(getAttackingPieceCoord(kingColor == white ? black : white));
 	
 	if (!attackingPieceCoord)
 		return false;
@@ -239,9 +216,9 @@ bool Board::isCheckMate(Piece::Color kingColor)
 
 				// 4. Verifying if an ally piece can move to one of the cases of the attack path to block the attack
 				const auto path = findAttackPath(*attackingPieceCoord, kingPosition);
-				for (const auto&[attackedCaseY, attackedCaseX] : path)
+				for (const auto& attackedCase : path)
 				{
-					if (m_board[y][x].getPiece().canMoveTo(*this, { y, x }, {attackedCaseY, attackedCaseX}))
+					if (m_board[y][x].getPiece().canMoveTo(*this, { y, x }, {attackedCase.getY(), attackedCase.getX()}))
 						return false;
 				}
 			}
@@ -250,10 +227,11 @@ bool Board::isCheckMate(Piece::Color kingColor)
 	return true;
 }
 
-std::optional<std::pair<size_t, size_t>> Board::getAttackingPieceCoord(Piece::Color attackingPieceColor) const
+std::optional<Position> Board::getAttackingPieceCoord(Color attackingPieceColor) const
 {
-	const auto kingPosition{ getKingPosition(attackingPieceColor == Piece::white ? Piece::black : Piece::white) };
-	const auto [KingY, KingX] = kingPosition;
+	const auto kingPosition{ getKingPosition(attackingPieceColor == white ? black : white) };
+	const auto KingY{ kingPosition.getY() };
+	const auto KingX{ kingPosition.getX() };
 
 	for (size_t y{ 0 }; y < boardSettings::boardSize; y++)
 	{
@@ -265,22 +243,22 @@ std::optional<std::pair<size_t, size_t>> Board::getAttackingPieceCoord(Piece::Co
 				const Piece* const piece{ m_board[y][x].getCase().get() };
 
 				// Special case for Pawns 
-				if (piece->getType() == Piece::pawn)
+				if (piece->getType() == pawn)
 				{
 					// Détermine la direction du pion selon sa couleur
-					int pawnDirection = (piece->getColor() == Piece::white) ? -1 : 1;
+					int pawnDirection = (piece->getColor() == white) ? -1 : 1;
 
 					// Vérifie si le pion peut capturer le roi (diagonale avant uniquement)
 					if ((y + pawnDirection == KingY) && (abs(static_cast<int>(x) - static_cast<int>(KingX)) == 1))
-						return std::pair{ y, x };
+						return Position{ y, x };
 				}
 				// For all pieces except the King
-				else if (piece && piece->getType() != Piece::king)
+				else if (piece && piece->getType() != king)
 				{
-					const std::pair threatPosition{ y, x };
+					const Position threatPosition{ y, x };
 					// Using generic method of movement verification
 					if (piece->canMoveTo(*this, threatPosition, kingPosition))
-						return std::pair{ y, x };
+						return Position{ y, x };
 				}
 			}
 		}
@@ -289,13 +267,15 @@ std::optional<std::pair<size_t, size_t>> Board::getAttackingPieceCoord(Piece::Co
 	return {};
 }
 
-std::vector<std::pair<size_t, size_t>> Board::findAttackPath(std::pair<size_t, size_t> attackerPos, std::pair<size_t, size_t> kingPos) const
+std::vector<Position> Board::findAttackPath(Position attackerPos, Position kingPos) const
 {
-	std::vector<std::pair<size_t, size_t>> path;
+	std::vector<Position> path;
 
-	const auto [attacker_Y, attacker_X] = attackerPos;
-	const auto [king_Y, king_X] = kingPos;
+	const auto attacker_Y{ attackerPos.getY() };
+	const auto attacker_X{ attackerPos.getX() };
 
+	const auto king_Y{ kingPos.getY() };
+	const auto king_X{ kingPos.getX() };
 
 	// Calculating direction
 	const int deltaY{ static_cast<int>(king_Y) - static_cast<int>(attacker_Y) };
@@ -319,17 +299,20 @@ std::vector<std::pair<size_t, size_t>> Board::findAttackPath(std::pair<size_t, s
 	return path;
 }
 
-bool Board::isSelfCheck(const std::pair<size_t, size_t> startCase, const std::pair<size_t, size_t> targetCase, const Piece::Color playerTurn)
+bool Board::isSelfCheck(const Position startCase, const Position targetCase, const Color playerTurn)
 {
-	const auto [startCaseY, startCaseX] = startCase;
-	const auto [targetCaseY, targetCaseX] = targetCase;
+	const auto startCaseY{ startCase.getY() };
+	const auto startCaseX{ startCase.getX() };
+
+	const auto targetCaseY{ targetCase.getY() };
+	const auto targetCaseX{ targetCase.getX() };
 
 	// Simulating move to verify is the player don't put himself in check
 	// Getting a copy of the starting case before moving them and later verifying if targetCase was not empty to get also a copy
 	auto tempStartCase{ PieceFactory::createPiece(m_board[startCaseY][startCaseX].getPiece().getType(), m_board[startCaseY][startCaseX].getPiece().getColor()) };
 
 	// Special case for Pawn (copying a specific variable)
-	if (tempStartCase->getType() == Piece::pawn)
+	if (tempStartCase->getType() == pawn)
 	{
 		dynamic_cast<Pawn*>(tempStartCase.get())->setHasMovedTwoSquares(dynamic_cast<Pawn*>(m_board[startCaseY][startCaseX].getCase().get())->hasMovedTwoSquares());
 		dynamic_cast<Pawn*>(tempStartCase.get())->setHasUsedEnPassant(dynamic_cast<Pawn*>(m_board[startCaseY][startCaseX].getCase().get())->hasUsedEnPassant());
@@ -360,9 +343,9 @@ bool Board::isSelfCheck(const std::pair<size_t, size_t> startCase, const std::pa
 	return true; // If that move put the player himself in check, make the player try again
 }
 
-bool Board::canCastleLeft(const Piece::Color playerTurn) const
+bool Board::canCastleLeft(const Color playerTurn) const
 {
-	const size_t y(playerTurn == Piece::white ? 7 : 0);
+	const size_t y(playerTurn == white ? 7 : 0);
 	constexpr size_t kingX{ 4 };
 	constexpr size_t leftRookX{ 0 };
 	constexpr size_t rightRookX{ 7 };
@@ -400,9 +383,9 @@ bool Board::canCastleLeft(const Piece::Color playerTurn) const
 	return false;
 }
 
-bool Board::canCastleRight(const Piece::Color playerTurn) const
+bool Board::canCastleRight(const Color playerTurn) const
 {
-	const size_t y(playerTurn == Piece::white ? 7 : 0);
+	const size_t y(playerTurn == white ? 7 : 0);
 	constexpr size_t kingX{ 4 };
 	constexpr size_t leftRookX{ 0 };
 	constexpr size_t rightRookX{ 7 };
@@ -440,9 +423,9 @@ bool Board::canCastleRight(const Piece::Color playerTurn) const
 	return false;
 }
 
-const std::pair<size_t, size_t> Board::castle(const Piece::Color color, std::string_view castlingSide)
+const Position Board::castle(const Color color, std::string_view castlingSide)
 {
-	const size_t y(color == Piece::white ? 7 : 0);
+	const size_t y(color == white ? 7 : 0);
 	constexpr size_t kingX{ 4 };
 	constexpr size_t leftRookX{ 0 };
 	constexpr size_t rightRookX{ 7 };
@@ -466,4 +449,53 @@ const std::pair<size_t, size_t> Board::castle(const Piece::Color color, std::str
 	}
 
 	throw std::runtime_error{ "Bad Castling" };
+}
+
+bool Board::isEmpty(Position pos) const
+{
+	return m_board[pos.getY()][pos.getX()].getCase() ? false : true;
+}
+
+const Piece* Board::getPieceAt(Position pos) const
+{
+	return m_board[pos.getY()][pos.getX()].getCase().get();
+}
+
+bool Board::isPositionUnderAttack(Position pos, Color attackerColor) const
+{
+	for (size_t y = 0; y < boardSettings::boardSize; y++)
+	{
+		for (size_t x = 0; x < boardSettings::boardSize; x++)
+		{
+			if (!m_board[y][x].isEmpty() && m_board[y][x].getPiece().canMoveTo(*this, { y, x }, pos))
+				return true;
+		}
+	}
+	return false;
+}
+
+const Position& Board::getKingPosition(Color color) const
+{
+	bool kingFound{};
+	for (size_t y{}; y < boardSettings::boardSize; y++)
+	{
+		auto found{ std::find_if(m_board[y].begin(), m_board[y].end(), [&](const Case& c)
+			{
+				if (c.isEmpty())
+					return false;
+
+			return c.getPiece().getType() == king && c.getPiece().getColor() == color;
+			}) };
+
+		if (found != m_board[y].end())
+		{
+			size_t x{ static_cast<size_t>(std::distance(m_board[y].begin(), found)) };
+			return { y, x };
+		}
+	}
+
+	if (!kingFound)
+		throw std::runtime_error{ "No king found" };
+
+	return { boardSettings::boardSize, boardSettings::boardSize }; // error value
 }

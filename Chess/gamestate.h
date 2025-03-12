@@ -2,7 +2,6 @@
 #define GAMESTATE_H
 #include "moveExecutor.h"
 #include "gameRules.h"
-#include "moveHistory.h"
 
 class GameState
 {
@@ -14,7 +13,7 @@ public:
 private:
 
 	Board board;
-	Piece::Color currentPlayer;
+	Color currentPlayer;
 	MoveHistory history;
 	GameStatus status;
 };

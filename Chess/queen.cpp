@@ -1,13 +1,14 @@
 #include "queen.h"
-#include "board.h"
 
-bool Queen::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const
+bool Queen::canMoveTo(const BoardState& board, const Position startPosition, const Position targetPosition) const
 {
 	// Starting case coordinates
-	const auto [y_Start, x_Start] = startPosition;
+	const auto y_Start{ startPosition.getY() };
+	const auto x_Start{ startPosition.getX() };
 
 	// Target case coordinates 
-	const auto [y_Target, x_Target] = targetPosition;
+	const auto y_Target{ targetPosition.getY() };
+	const auto x_Target{ targetPosition.getX() };
 
 	// Verifying diagonal movement
 	size_t deltaX = (x_Start > x_Target) ? (x_Start - x_Target) : (x_Target - x_Start);
@@ -26,7 +27,7 @@ bool Queen::canMoveTo(const Board& board, const std::pair<size_t, size_t> startP
 				while (y < y_Target && x < x_Target)
 				{
 
-					if (!board.getBoard()[y][x].isEmpty())
+					if (!board.isEmpty({y, x}))
 						return false;
 					y++;
 					x++;
@@ -41,7 +42,7 @@ bool Queen::canMoveTo(const Board& board, const std::pair<size_t, size_t> startP
 
 				while (y < y_Target && x > x_Target)
 				{
-					if (!board.getBoard()[y][x].isEmpty())
+					if (!board.isEmpty({ y, x }))
 						return false;
 					y++;
 					x--;
@@ -56,7 +57,7 @@ bool Queen::canMoveTo(const Board& board, const std::pair<size_t, size_t> startP
 
 				while (y > y_Target && x < x_Target)
 				{
-					if (!board.getBoard()[y][x].isEmpty())
+					if (!board.isEmpty({ y, x }))
 						return false;
 					y--;
 					x++;
@@ -71,7 +72,7 @@ bool Queen::canMoveTo(const Board& board, const std::pair<size_t, size_t> startP
 
 				while (y > y_Target && x > x_Target)
 				{
-					if (!board.getBoard()[y][x].isEmpty())
+					if (!board.isEmpty({ y, x }))
 						return false;
 					y--;
 					x--;
@@ -88,14 +89,14 @@ bool Queen::canMoveTo(const Board& board, const std::pair<size_t, size_t> startP
 		// Moving up
 		for (size_t y{ y_Start }; y > y_Target; y--)
 		{
-			if (!board.getBoard()[y - 1][x_Start].isEmpty() && y - 1 != y_Target)
+			if (!board.isEmpty({y - 1, x_Start}) && y - 1 != y_Target)
 				return false;
 		}
 
 		// Moving down
 		for (size_t y{ y_Start }; y < y_Target; y++)
 		{
-			if (!board.getBoard()[y + 1][x_Start].isEmpty() && y + 1 != y_Target)
+			if (!board.isEmpty({y + 1, x_Start}) && y + 1 != y_Target)
 				return false;
 		}
 		return true;
@@ -107,14 +108,14 @@ bool Queen::canMoveTo(const Board& board, const std::pair<size_t, size_t> startP
 		// Moving to the right
 		for (size_t x{ x_Start }; x < x_Target; x++)
 		{
-			if (!board.getBoard()[y_Start][x + 1].isEmpty() && x + 1 != x_Target)
+			if (!board.isEmpty({ y_Start, x + 1 }) && x + 1 != x_Target)
 				return false;
 		}
 
 		// Moving to the left
 		for (size_t x{ x_Start }; x > x_Target; x--)
 		{
-			if (!board.getBoard()[y_Start][x - 1].isEmpty() && x - 1 != x_Target)
+			if (!board.isEmpty({y_Start, x - 1}) && x - 1 != x_Target)
 				return false;
 		}
 		return true;

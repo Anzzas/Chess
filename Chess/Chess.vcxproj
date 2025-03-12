@@ -138,6 +138,7 @@
     <ClCompile Include="pawn.cpp" />
     <ClCompile Include="piece.cpp" />
     <ClCompile Include="pieceFactory.cpp" />
+    <ClCompile Include="position.cpp" />
     <ClCompile Include="queen.cpp" />
     <ClCompile Include="rook.cpp" />
     <ClCompile Include="userInput.cpp" />
@@ -148,6 +149,8 @@
     <ClInclude Include="boardState.h" />
     <ClInclude Include="case.h" />
     <ClInclude Include="chessNotation.h" />
+    <ClInclude Include="constants.h" />
+    <ClInclude Include="enums.h" />
     <ClInclude Include="gameRules.h" />
     <ClInclude Include="gamestate.h" />
     <ClInclude Include="king.h" />

@@ -6,7 +6,7 @@ class Knight : public Piece
 {
 public:
 
-	bool canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const override;
+	bool canMoveTo(const BoardState& board, const Position startPosition, const Position targetPosition) const override;
 
 private:
 

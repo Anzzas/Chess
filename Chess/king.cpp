@@ -1,13 +1,14 @@
 #include "king.h"
-#include "board.h"
 
-bool King::canMoveTo(const Board& board, const std::pair<size_t, size_t> startPosition, const std::pair<size_t, size_t> targetPosition) const
+bool King::canMoveTo(const BoardState& board, const Position startPosition, const Position targetPosition) const
 {
     // Starting case coordinates
-    const auto [y_Start, x_Start] = startPosition;
+    const auto y_Start{ startPosition.getY() };
+    const auto x_Start{ startPosition.getX() };
 
     // Target case coordinates 
-    const auto [y_Target, x_Target] = targetPosition;
+    const auto y_Target{ targetPosition.getY() };
+    const auto x_Target{ targetPosition.getX() };
 
     // Verifying the king doesn't put himself in Check
     if (!board.isKingInCheck(m_color, targetPosition))

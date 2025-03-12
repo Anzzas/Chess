@@ -1,8 +1,8 @@
 #ifndef CASE_H
 #define CASE_H
 #include <memory>
-#include "piece.h"
 
+class Piece;
 
 class Case
 {

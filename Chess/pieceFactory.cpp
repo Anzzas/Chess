@@ -1,45 +1,45 @@
 #include "pieceFactory.h"
 
-std::unique_ptr<Piece> PieceFactory::createPawn(Piece::Color color)
+std::unique_ptr<Piece> PieceFactory::createPawn(Color color)
 {
-	return std::make_unique<Pawn>(Pawn{ 'P', color, Piece::Type::pawn });
+	return std::make_unique<Pawn>(Pawn{ 'P', color, Type::pawn });
 }
 
-std::unique_ptr<Piece> PieceFactory::createBishop(Piece::Color color)
+std::unique_ptr<Piece> PieceFactory::createBishop(Color color)
 {
-	return std::make_unique<Bishop>(Bishop{ 'B', color, Piece::Type::bishop });
+	return std::make_unique<Bishop>(Bishop{ 'B', color, Type::bishop });
 }
 
-std::unique_ptr<Piece> PieceFactory::createKnight(Piece::Color color)
+std::unique_ptr<Piece> PieceFactory::createKnight(Color color)
 {
-	return std::make_unique<Knight>(Knight{ 'N', color, Piece::Type::knight });
+	return std::make_unique<Knight>(Knight{ 'N', color, Type::knight });
 }
 
-std::unique_ptr<Piece> PieceFactory::createRook(Piece::Color color)
+std::unique_ptr<Piece> PieceFactory::createRook(Color color)
 {
-	return std::make_unique<Rook>(Rook{ 'R', color, Piece::Type::rook });
+	return std::make_unique<Rook>(Rook{ 'R', color, Type::rook });
 }
 
-std::unique_ptr<Piece> PieceFactory::createQueen(Piece::Color color)
+std::unique_ptr<Piece> PieceFactory::createQueen(Color color)
 {
-	return std::make_unique<Queen>(Queen{ 'Q', color, Piece::Type::queen });
+	return std::make_unique<Queen>(Queen{ 'Q', color, Type::queen });
 }
 
-std::unique_ptr<Piece> PieceFactory::createKing(Piece::Color color)
+std::unique_ptr<Piece> PieceFactory::createKing(Color color)
 {
-	return std::make_unique<King>(King{ 'K', color, Piece::Type::king });
+	return std::make_unique<King>(King{ 'K', color, Type::king });
 }
 
-std::unique_ptr<Piece> PieceFactory::createPiece(Piece::Type type, Piece::Color color)
+std::unique_ptr<Piece> PieceFactory::createPiece(Type type, Color color)
 {
 	switch (type)
 	{
-	case Piece::pawn: return PieceFactory::createPawn(color);
-	case Piece::bishop: return PieceFactory::createBishop(color);
-	case Piece::knight: return PieceFactory::createKnight(color);
-	case Piece::rook: return PieceFactory::createRook(color);
-	case Piece::queen: return PieceFactory::createQueen(color);
-	case Piece::king: return PieceFactory::createKing(color);
+	case pawn: return PieceFactory::createPawn(color);
+	case bishop: return PieceFactory::createBishop(color);
+	case knight: return PieceFactory::createKnight(color);
+	case rook: return PieceFactory::createRook(color);
+	case queen: return PieceFactory::createQueen(color);
+	case king: return PieceFactory::createKing(color);
 	default: throw std::runtime_error{ "Undefined Piece Type" };
 	}
 }

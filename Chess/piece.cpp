@@ -11,19 +11,19 @@ const char& Piece::getSymbol() const
 	return m_symbol;
 }
 
-const Piece::Color& Piece::getColor() const
+const Color& Piece::getColor() const
 {
 	return m_color;
 }
 
-const Piece::Type& Piece::getType() const
+const Type& Piece::getType() const
 {
 	return m_type;
 }
 
 std::ostream& operator<< (std::ostream& out, const Piece& piece)
 {
-	if (piece.getColor() == Piece::black)
+	if (piece.getColor() == black)
 		out << getLowerChar(piece.getSymbol()); // Printing piece's symbol in lower case for BLACK
 
 	else
@@ -32,10 +32,10 @@ std::ostream& operator<< (std::ostream& out, const Piece& piece)
 	return out;
 }
 
-std::ostream& operator<< (std::ostream& out, const Piece::Color& color)
+std::ostream& operator<< (std::ostream& out, const Color& color)
 {
-	constexpr std::array<const char, Piece::max_colors> colors{ 'w', 'b' };
-	static_assert(colors.size() == Piece::max_colors);
+	constexpr std::array<const char, max_colors> colors{ 'w', 'b' };
+	static_assert(colors.size() == max_colors);
 
 	out << colors[color];
 	return out;

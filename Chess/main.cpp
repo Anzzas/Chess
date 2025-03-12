@@ -7,22 +7,24 @@ int main()
 	
 	Board board{};
 	std::cout << board << "\n\n";
-	Piece::Color playerTurn{ Piece::white };
+	Color playerTurn{ white };
 
 	while (true)
 	{
 		const auto startCase{ inputInitialCase(board, playerTurn) };
-		const auto [startCaseY, startCaseX] = startCase;
+		const auto startCaseY{ startCase.getY() };
+		const auto startCaseX{ startCase.getX() };
 
-		std::optional<std::pair<size_t, size_t>> targetCase{ {} };
-		auto [targetCaseY, targetCaseX] = *targetCase;
+		std::optional<Position> targetCase{ {0, 0} };
+		auto targetCaseY{ targetCase->getY() };
+		auto targetCaseX{ targetCase->getX() };
 
 		if (g_isCastling) // If player is castling
 		{
 			std::cout << "Castling\n\n";
 			targetCase = startCase; // Putting selected rook on targetCase for check/check mate verification
-			targetCaseY = targetCase->first;
-			targetCaseX = targetCase->second;
+			targetCaseY = targetCase->getY();
+			targetCaseX = targetCase->getX();
 		}
 
 		else
@@ -35,8 +37,8 @@ int main()
 				continue;
 			}
 
-			targetCaseY = targetCase->first;
-			targetCaseX = targetCase->second;
+			targetCaseY = targetCase->getY();
+			targetCaseX = targetCase->getX();
 
 			const auto& choosenPiece{ board.getBoard()[startCaseY][startCaseX].getPiece() };
 			if (!choosenPiece.canMoveTo(board, startCase, *targetCase))
@@ -56,25 +58,25 @@ int main()
 
 		std::cout << board << "\n\n";
 
-		if (board.isCheckMate(board.getBoard()[targetCaseY][targetCaseX].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
+		if (board.isCheckMate(board.getBoard()[targetCaseY][targetCaseX].getPiece().getColor() == black ? white : black))
 		{
 			std::cout << "CHECK MATE !\n\n";
 			return 0;
 		}
 
-		else if (board.isKingInCheck(board.getBoard()[targetCaseY][targetCaseX].getPiece().getColor() == Piece::black ? Piece::white : Piece::black))
+		else if (board.isKingInCheck(board.getBoard()[targetCaseY][targetCaseX].getPiece().getColor() == black ? white : black))
 			std::cout << "CHECK !\n\n";
 
 		// Changing player turn to the opposite color after the turn is finished
-		playerTurn == Piece::white ? playerTurn = Piece::black : playerTurn = Piece::white;
+		playerTurn == white ? playerTurn = black : playerTurn = white;
 
 		std::cout << "It is ";
 		switch (playerTurn)
 		{
-		case Piece::white:
+		case white:
 			std::cout << "white";
 			break;
-		case Piece::black:
+		case black:
 			std::cout << "black";
 			break;
 		}

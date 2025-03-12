@@ -1,7 +1,5 @@
 #ifndef MOVEVALIDATOR_H
 #define MOVEVALIDATOR_H
-#include "boardState.h"
-#include "board.h"
 
 class MoveValidator
 {

@@ -1,6 +1,7 @@
 #ifndef USERINTERFACE_H
 #define USERINTERFACE_H
-#include "gamestate.h"
+
+class Move;
 
 class UserInterface
 {
