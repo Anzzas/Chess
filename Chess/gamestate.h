@@ -3,6 +3,8 @@
 #include "moveExecutor.h"
 #include "gameRules.h"
 
+class Position;
+
 class GameState
 {
 public:

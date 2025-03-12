@@ -19,4 +19,11 @@
 		max_types
 	};
 
+	enum class CastlingSide
+	{
+		left,
+		right,
+		max_sides
+	};
+
 #endif
