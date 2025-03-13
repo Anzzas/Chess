@@ -16,6 +16,9 @@ public:
 	{
 	}
 
+	const Position& getFrom() const { return m_from; }
+	const Position& getTo() const { return m_to; }
+
 private:
 
 	Type m_pieceType;

@@ -10,15 +10,20 @@ class GameState
 {
 public:
 
+	GameState()
+		: m_currentPlayer{ white }
+	{
+	}
+
 	bool makeMove(Position from, Position to);
 	bool isGameOver() const;
 
 private:
 
-	Board board;
-	Color currentPlayer;
-	MoveHistory history;
-	GameStatus status;
+	Board m_board{};
+	Color m_currentPlayer{};
+	MoveHistory m_history{};
+	GameRules m_rules{};
 };
 
 #endif
