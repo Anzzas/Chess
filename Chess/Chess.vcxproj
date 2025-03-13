@@ -132,6 +132,7 @@
     <ClCompile Include="bishop.cpp" />
     <ClCompile Include="board.cpp" />
     <ClCompile Include="case.cpp" />
+    <ClCompile Include="gamestate.cpp" />
     <ClCompile Include="king.cpp" />
     <ClCompile Include="knight.cpp" />
     <ClCompile Include="main.cpp" />

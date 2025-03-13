@@ -3,6 +3,7 @@
 #include "moveExecutor.h"
 #include "gameRules.h"
 #include "moveHistory.h"
+#include "move.h"
 
 class Position;
 
@@ -24,6 +25,8 @@ private:
 	Color m_currentPlayer{};
 	MoveHistory m_history{};
 	GameRules m_rules{};
+	MoveExecutor m_executor{};
+	MoveValidator m_validator{};
 };
 
 #endif

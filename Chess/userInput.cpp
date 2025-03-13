@@ -1,55 +1,69 @@
 #include "userInput.h"
 
-Position inputInitialCase(Board& board, const Color playerColor)
+enum class ValidationMode 
 {
-	size_t x{};
-	size_t y{};
+	InitialPiece,
+	TargetPiece
+};
+
+Position inputInitialCase(BoardState& board, const Color playerColor)
+{
 	std::string choice{};
 	while (true)
 	{
 		std::cout << "Select the piece you want to play: ";
 		std::cin >> choice;
 
-		// Castling CHECK
-		if (choice == "oq" || choice == "oo")
+		if (isChoiceValid(choice, board, playerColor, ValidationMode::InitialPiece))
+			break;
+	}
+
+	return choiceToCoord.find(choice)->second;
+}
+
+bool isChoiceValid(const std::string& choice, const BoardState& board, Color playerColor, ValidationMode mode)
+{
+	/*if (choice == "oq" || choice == "oo")
+	{
+		if (choice == "oq" && board.canCastleLeft(playerColor))
 		{
-			if (choice == "oq" && board.canCastleLeft(playerColor))
-			{
-				g_isCastling = true;
-				return board.castle(playerColor, choice);
-			}
-			else if (choice == "oo" && board.canCastleRight(playerColor))
-			{
-				g_isCastling = true;
-				return board.castle(playerColor, choice);
-			}
-
-			std::cout << "You cannot castle ";
-			if (choice == "oq")
-				std::cout << "left ";
-			else if (choice == "oo")
-				std::cout << "right ";
-
-			std::cout << "!\n\n";
-			continue;
+			g_isCastling = true;
+			return board.castle(playerColor, choice);
+		}
+		else if (choice == "oo" && board.canCastleRight(playerColor))
+		{
+			g_isCastling = true;
+			return board.castle(playerColor, choice);
 		}
 
-		if (!choiceToCoord.contains(choice))
-		{
-			std::cout << "Enter a valid case !\n\n";
-			continue;
-		}
+		std::cout << "You cannot castle ";
+		if (choice == "oq")
+			std::cout << "left ";
+		else if (choice == "oo")
+			std::cout << "right ";
 
-		x = choiceToCoord.find(choice)->second.getX();
-		y = choiceToCoord.find(choice)->second.getY();
+		std::cout << "!\n\n";
+		continue;
+	}*/
 
-		if (board.getBoard()[y][x].isEmpty())
-		{
-			std::cout << "This case is empty !\n\n";
-			continue;
-		}
+	if (!choiceToCoord.contains(choice))
+	{
+		std::cout << "Enter a valid case !\n\n";
+		return false;
+	}
+	const Position pos{ choiceToCoord.find(choice)->second };
 
-		else if (board.getBoard()[y][x].getPiece().getColor() != playerColor)
+	if (board.isEmpty(pos))
+	{
+		std::cout << "This case is empty !\n\n";
+		return false;
+	}
+
+	switch (mode)
+	{
+	case ValidationMode::InitialPiece:
+
+		if (board.getPieceAt(pos)->getColor() != playerColor)
 		{
 			std::cout << "Select one of your ";
 			switch (playerColor)
@@ -62,32 +76,12 @@ Position inputInitialCase(Board& board, const Color playerColor)
 				break;
 			}
 			std::cout << " pieces!\n\n";
-			continue;
+			return false;
 		}
 
-		break;
-	}
-	return { y, x };
-}
+	case ValidationMode::TargetPiece:
 
-std::optional<Position> inputTargetCase(BoardState& board, const Position startCase, const Color playerColor)
-{
-	std::string choice{};
-	while (true)
-	{
-		std::cout << "Select the target case: ";
-		std::cin >> choice;
-
-		if (!choiceToCoord.contains(choice))
-		{
-			std::cout << "Enter a valid case !\n\n";
-			continue;
-		}
-		const auto targetCoord{choiceToCoord.find(choice)->second};
-		const auto targetY{ targetCoord.getY() };
-		const auto targetX{ targetCoord.getX() };
-
-		if (!board.isEmpty(targetCoord) && board.getPieceAt(targetCoord)->getColor() == playerColor)
+		if (!board.isEmpty(pos) && board.getPieceAt(pos)->getColor() == playerColor)
 		{
 			std::cout << "There is already a ";
 			switch (playerColor)
@@ -100,45 +94,23 @@ std::optional<Position> inputTargetCase(BoardState& board, const Position startC
 				break;
 			}
 			std::cout << " piece here !\n\n";
-			continue;
+			return false;;
 		}
-
-		else if (board.isKingInCheck(playerColor))
-		{
-			const auto kingPosition{ board.getKingPosition(playerColor) };
-			const auto attackerPosition{ board.getAttackingPieceCoord(playerColor == black ? white : black) }; 
-
-			if (!attackerPosition)
-				throw std::runtime_error{ "King in check but no attacker found !" };
-
-			// Getting the attack path
-			const auto path = board.findAttackPath(*attackerPosition, kingPosition);
-
-			// Checking if the target selected case is the King attacker (meaning the player decide to take that piece)
-			if (targetCoord == attackerPosition)
-				return targetCoord;
-
-			// Checking if the target selected case is corresponding to one of the attackPath (meaning it will block the king attack and cover him)
-			for (const auto& attackedCase : path)
-			{
-				if (targetCoord == attackedCase)
-					return targetCoord;
-			}
-
-			const auto startCaseY{ startCase.getY() };
-			const auto startCaseX{ startCase.getX() };
-			const auto& startPiece{ board.getBoard()[startCaseY][startCaseX].getPiece() };
-
-			if (startPiece.getType() == king && startPiece.canMoveTo(board, startCase, targetCoord))
-				return targetCoord;
-
-			
-			return {}; // Returning nullopt because used move do not defend the king currently in check
-		}
-
-		else if (targetCase.isEmpty() || targetCase.getPiece().getColor() != playerColor)
-			return Position{ targetY, targetX };
-
-		throw std::runtime_error{ "Bad Input" };
 	}
+	return true;
+}
+
+std::optional<Position> inputTargetCase(BoardState& board, const Position startCase, const Color playerColor)
+{
+	std::string choice{};
+	while (true)
+	{
+		std::cout << "Select the target case: ";
+		std::cin >> choice;
+
+		if (isChoiceValid(choice, board, playerColor, ValidationMode::TargetPiece))
+			break;
+	}
+
+	return Position{ choiceToCoord.}
 }

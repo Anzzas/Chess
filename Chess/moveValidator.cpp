@@ -1,8 +1,8 @@
 #include "moveValidator.h"
 
-bool MoveValidator::isValidMove(const BoardState& board, Position from, Position to) const
+bool MoveValidator::isValidMove(const BoardState& board, const Move& move) const
 {
-	if (from.isValid() && to.isValid())
+	if (move.getFrom().isValid() && move.getTo().isValid())
 		return true;
 
 	return false;
