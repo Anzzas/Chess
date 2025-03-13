@@ -499,3 +499,13 @@ const Position& Board::getKingPosition(Color color) const
 
 	return { boardSettings::boardSize, boardSettings::boardSize }; // error value
 }
+
+void Board::removePieceAt(Position pos)
+{
+	m_board[pos.getY()][pos.getX()].getCase().reset();
+}
+
+void Board::placePieceAt(Position from, Position to)
+{
+
+}

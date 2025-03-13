@@ -8,7 +8,7 @@ class UserInterface
 public:
 
 	void displayBoard(const BoardState& board) const;
-	std::optional<Move> getPlayerMove(const GameState& game, Piece::Color player) const;
+	std::optional<Move> getPlayerMove(const GameState& game, Color player) const;
 };
 
 #endif

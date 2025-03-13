@@ -137,6 +137,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="moveExecutor.cpp" />
     <ClCompile Include="moveHistory.cpp" />
+    <ClCompile Include="moveValidator.cpp" />
     <ClCompile Include="pawn.cpp" />
     <ClCompile Include="piece.cpp" />
     <ClCompile Include="pieceFactory.cpp" />

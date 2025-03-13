@@ -66,6 +66,11 @@ public:
 	const Piece* getPieceAt(Position pos) const override;
 	bool isPositionUnderAttack(Position pos, Color attackerColor) const override;
 	const Position& getKingPosition(Color color) const override;
+
+	void removePieceAt(Position pos);
+	void placePieceAt(Position from, Position to);
+
+
 private:
 
 	Point2D m_board{};

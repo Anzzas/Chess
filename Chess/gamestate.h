@@ -2,6 +2,7 @@
 #define GAMESTATE_H
 #include "moveExecutor.h"
 #include "gameRules.h"
+#include "moveHistory.h"
 
 class Position;
 
