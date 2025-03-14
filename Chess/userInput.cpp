@@ -1,6 +1,11 @@
 #include "userInput.h"
 
-Position inputInitialCase(BoardState& board, const Color playerColor)
+std::pair<Position, Position> UserInput::inputMove(const BoardState& board, const Color playerColor) const
+{
+	return { inputInitialCase(board, playerColor), inputTargetCase(board, playerColor) };
+}
+
+Position UserInput::inputInitialCase(const BoardState& board, const Color playerColor) const
 {
 	std::string choice{};
 	while (true)
@@ -15,7 +20,7 @@ Position inputInitialCase(BoardState& board, const Color playerColor)
 	return choiceToCoord.find(choice)->second;
 }
 
-std::optional<Position> inputTargetCase(BoardState& board, const Position startCase, const Color playerColor)
+Position UserInput::inputTargetCase(const BoardState& board, const Color playerColor) const
 {
 	std::string choice{};
 	while (true)
@@ -30,7 +35,7 @@ std::optional<Position> inputTargetCase(BoardState& board, const Position startC
 	return Position{ choiceToCoord.find(choice)->second };
 }
 
-bool isChoiceValid(const std::string& choice, const BoardState& board, Color playerColor, ValidationMode mode)
+bool UserInput::isChoiceValid(const std::string& choice, const BoardState& board, Color playerColor, ValidationMode mode) const
 {
 	/*if (choice == "oq" || choice == "oo")
 	{

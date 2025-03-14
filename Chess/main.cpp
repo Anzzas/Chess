@@ -6,7 +6,12 @@ int main()
 {
 	std::cout << "\tChess Game\n\n";
 	
+	UserInput userinput{};
+
+	userinput.inputMove()
+
 	GameState game{};
+	game.makeMove();
 	std::cout << board << "\n\n";
 	Color playerTurn{ white };
 

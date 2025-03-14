@@ -27,6 +27,7 @@ private:
 	GameRules m_rules{};
 	MoveExecutor m_executor{};
 	MoveValidator m_validator{};
+
 };
 
 #endif

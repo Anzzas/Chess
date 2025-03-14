@@ -32,10 +32,19 @@ enum class ValidationMode
 
 inline bool g_isCastling{};
 
-Position inputInitialCase(BoardState& board, const Color playerColor);
+class UserInput
+{
+public:
 
-std::optional<Position> inputTargetCase(BoardState& board, const Position startCase, const Color playerColor);
+	UserInput() = default;
 
-bool isChoiceValid(const std::string& choice, const BoardState& board, Color playerColor, ValidationMode mode);
+	std::pair<Position, Position> inputMove(const BoardState& board, const Color playerColor) const;
+
+private:
+
+	Position inputInitialCase(const BoardState& board, const Color playerColor) const;
+	Position inputTargetCase(const BoardState& board, const Color playerColor) const;
+	bool isChoiceValid(const std::string& choice, const BoardState& board, Color playerColor, ValidationMode mode) const;
+};
 
 #endif
