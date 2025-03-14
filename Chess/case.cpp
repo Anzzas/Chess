@@ -1,5 +1,7 @@
 #include "case.h"
-#include "piece.h"
+
+std::ostream& operator<< (std::ostream& out, const Color& color);
+std::ostream& operator<< (std::ostream& out, const Piece& piece);
 
 std::ostream& operator<< (std::ostream& out, const Case& c)
 {

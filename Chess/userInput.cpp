@@ -1,11 +1,5 @@
 #include "userInput.h"
 
-enum class ValidationMode 
-{
-	InitialPiece,
-	TargetPiece
-};
-
 Position inputInitialCase(BoardState& board, const Color playerColor)
 {
 	std::string choice{};
@@ -19,6 +13,21 @@ Position inputInitialCase(BoardState& board, const Color playerColor)
 	}
 
 	return choiceToCoord.find(choice)->second;
+}
+
+std::optional<Position> inputTargetCase(BoardState& board, const Position startCase, const Color playerColor)
+{
+	std::string choice{};
+	while (true)
+	{
+		std::cout << "Select the target case: ";
+		std::cin >> choice;
+
+		if (isChoiceValid(choice, board, playerColor, ValidationMode::TargetPiece))
+			break;
+	}
+
+	return Position{ choiceToCoord.find(choice)->second };
 }
 
 bool isChoiceValid(const std::string& choice, const BoardState& board, Color playerColor, ValidationMode mode)
@@ -63,7 +72,7 @@ bool isChoiceValid(const std::string& choice, const BoardState& board, Color pla
 	{
 	case ValidationMode::InitialPiece:
 
-		if (board.getPieceAt(pos)->getColor() != playerColor)
+		if (!board.isPieceOfColor(pos, playerColor))
 		{
 			std::cout << "Select one of your ";
 			switch (playerColor)
@@ -78,10 +87,11 @@ bool isChoiceValid(const std::string& choice, const BoardState& board, Color pla
 			std::cout << " pieces!\n\n";
 			return false;
 		}
+		break;
 
 	case ValidationMode::TargetPiece:
 
-		if (!board.isEmpty(pos) && board.getPieceAt(pos)->getColor() == playerColor)
+		if (!board.isEmpty(pos) && board.isPieceOfColor(pos, playerColor))
 		{
 			std::cout << "There is already a ";
 			switch (playerColor)
@@ -98,19 +108,4 @@ bool isChoiceValid(const std::string& choice, const BoardState& board, Color pla
 		}
 	}
 	return true;
-}
-
-std::optional<Position> inputTargetCase(BoardState& board, const Position startCase, const Color playerColor)
-{
-	std::string choice{};
-	while (true)
-	{
-		std::cout << "Select the target case: ";
-		std::cin >> choice;
-
-		if (isChoiceValid(choice, board, playerColor, ValidationMode::TargetPiece))
-			break;
-	}
-
-	return Position{ choiceToCoord.}
 }

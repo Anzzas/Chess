@@ -7,7 +7,6 @@
 #include <cassert>
 #include "enums.h"
 #include "position.h"
-#include "boardState.h"
 
 class BoardState;
 

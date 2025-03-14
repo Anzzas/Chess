@@ -1,6 +1,8 @@
 #ifndef CASE_H
 #define CASE_H
 #include <memory>
+#include <iostream>
+#include "enums.h"
 
 class Piece;
 

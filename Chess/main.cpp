@@ -1,11 +1,12 @@
 #include "pieceFactory.h"
 #include "userInput.h"
+#include "gamestate.h"
 
 int main()
 {
 	std::cout << "\tChess Game\n\n";
 	
-	Board board{};
+	GameState game{};
 	std::cout << board << "\n\n";
 	Color playerTurn{ white };
 

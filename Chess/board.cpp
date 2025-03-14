@@ -509,3 +509,8 @@ void Board::placePieceAt(Position from, Position to)
 {
 
 }
+
+bool Board::isPieceOfColor(Position pos, Color color) const
+{
+	return getPieceAt(pos)->getColor() == color;
+}

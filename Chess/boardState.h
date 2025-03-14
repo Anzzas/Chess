@@ -15,6 +15,7 @@ public:
 	virtual const Piece* getPieceAt(Position pos) const = 0;
 	virtual bool isPositionUnderAttack(Position pos, Color attackerColor) const = 0;
 	virtual const Position& getKingPosition(Color color) const = 0;
+	virtual bool isPieceOfColor(Position pos, Color color) const = 0;
 };
 
 #endif

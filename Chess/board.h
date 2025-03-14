@@ -66,6 +66,7 @@ public:
 	const Piece* getPieceAt(Position pos) const override;
 	bool isPositionUnderAttack(Position pos, Color attackerColor) const override;
 	const Position& getKingPosition(Color color) const override;
+	bool isPieceOfColor(Position pos, Color color) const override;
 
 	void removePieceAt(Position pos);
 	void placePieceAt(Position from, Position to);
