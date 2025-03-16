@@ -8,30 +8,32 @@ class Move
 {
 public:
 
-	Move(Type pieceType, Type capturedType, Position from, Position To)
-		: m_usedType{pieceType}
-		, m_capturedType{capturedType}
-		, m_from{from}
-		, m_to{To}
+	Move(Type fromType, Type toType, Position from, Position To, MoveType moveType)
+		: m_fromType{ fromType }
+		, m_toType{ toType }
+		, m_from{ from }
+		, m_to{ To }
+		, m_moveType{ moveType }
 	{
 	}
 
 	const Position& getFrom() const { return m_from; }
 	const Position& getTo() const { return m_to; }
-	const Type& getUsedType() const { return m_usedType; }
-	const Type& getCapturedType() const { return m_capturedType; }
+	const Type& getFromType() const { return m_fromType; }
+	const Type& getCapturedType() const { return m_toType; }
+	const MoveType& getMoveType() const { return m_moveType; }
+	void setMoveType(MoveType moveType) { m_moveType = moveType; }
 
 private:
 
-	Type m_usedType;
-	Type m_capturedType;
+	Type m_fromType{};
+	Type m_toType{};
 	Position m_from;
 	Position m_to;
+	MoveType m_moveType{};
 	std::optional<Type> m_promotion;
-	bool m_isCheck;
-	bool m_isCheckmate;
-	bool m_isCastling;
-	bool m_isEnPassant;
+	bool m_isCheck{};
+	bool m_isCheckmate{};
 };
 
 #endif

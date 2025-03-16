@@ -12,22 +12,25 @@ class GameState
 public:
 
 	GameState()
-		: m_currentPlayer{ white }
+		: m_currentPlayer{ Color::white }
 	{
 	}
 
-	bool makeMove(Position from, Position to);
+	bool makeMove(Move move);
 	bool isGameOver() const;
+	void setNextPlayer();
+
+	const Board& getBoard() const { return m_board; }
+	const Color& getCurrentPlayer() const { return m_currentPlayer; }
 
 private:
 
 	Board m_board{};
 	Color m_currentPlayer{};
+	MoveValidator m_validator{};
+	MoveExecutor m_executor{};
 	MoveHistory m_history{};
 	GameRules m_rules{};
-	MoveExecutor m_executor{};
-	MoveValidator m_validator{};
-
 };
 
 #endif

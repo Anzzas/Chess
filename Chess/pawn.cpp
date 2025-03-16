@@ -1,5 +1,8 @@
 #include "pawn.h"
 
+using enum Type;
+using enum Color;
+
 bool Pawn::canMoveTo(const BoardState& board, const Position startPosition, const Position targetPosition) const
 {
 
@@ -14,25 +17,8 @@ bool Pawn::canMoveTo(const BoardState& board, const Position startPosition, cons
 
 	if (board.isEmpty(targetPosition))
 	{
-		for (auto offsetX : {-1, 1})
-		{
-			// EN-PASSANT CHECK
-			// Checking if there's a piece at the RIGHT and if this piece is a Pawn of the opposite color
-			if (x_Start + offsetX >= 0 && x_Start + offsetX < boardSettings::boardSize)
-			{
-				const Piece* adjacentPiece{ board.getPieceAt({y_Start, x_Start + offsetX}) };
-
-				if (adjacentPiece && adjacentPiece->getType() == pawn && adjacentPiece->getColor() != m_color)
-				{
-					// Then checking if this Pawn has moved two squares forward to check if we can take by "en-passant"
-					if (dynamic_cast<Pawn*>(adjacentPiece)->hasMovedTwoSquares() && (y_Target == y_Start + forwardDirection && x_Target == x_Start + offsetX))
-					{
-						m_hasUsedEnPassant = true;
-						return true;
-					}
-				}
-			}
-		}
+		if (isEnPassant(board, startPosition, targetPosition))
+			return true;
 
 		// Moving 2 cases FORWARD at starting Pawn case
 		if (y_Start == startingRank && y_Target == y_Start + (forwardDirection * 2) && x_Target == x_Start)
@@ -89,4 +75,27 @@ const bool& Pawn::hasUsedEnPassant() const
 void Pawn::setHasUsedEnPassant(bool state) const
 {
 	m_hasUsedEnPassant = state;
+}
+
+bool Pawn::isEnPassant(const BoardState& board, const Position& from, const Position& to) const
+{
+	const int forwardDirection = (m_color == white) ? -1 : 1;
+
+	for (auto offsetX : { -1, 1 })
+	{
+		// EN-PASSANT CHECK
+		// Checking if there's a piece at the RIGHT or LEFT and if this piece is a Pawn of the opposite color
+		if (from.getX() + offsetX >= 0 && from.getX() + offsetX < boardSettings::boardSize)
+		{
+			const Piece* adjacentPiece{ board.getPieceAt({from.getY(), from.getX() + offsetX})};
+
+			bool isPawnOfOppositeColor{ adjacentPiece && adjacentPiece->getType() == pawn && adjacentPiece->getColor() != m_color };
+			bool hasMovedTwoSquares{ dynamic_cast<const Pawn*>(adjacentPiece)->hasMovedTwoSquares() };
+			bool isTargetSquareBehindEnemyPawn{ to.getY() == from.getY() + forwardDirection && to.getX() == from.getX() + offsetX };
+
+			if (isPawnOfOppositeColor && hasMovedTwoSquares && isTargetSquareBehindEnemyPawn)
+				return true;
+		}
+	}
+	return false;
 }

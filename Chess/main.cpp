@@ -7,13 +7,11 @@ int main()
 	std::cout << "\tChess Game\n\n";
 	
 	UserInput userinput{};
+	GameState gameState{};
 
-	userinput.inputMove()
+	gameState.makeMove(userinput.inputMoves(gameState.getBoard(), gameState.getCurrentPlayer()));
 
-	GameState game{};
-	game.makeMove();
-	std::cout << board << "\n\n";
-	Color playerTurn{ white };
+	std::cout << gameState.getBoard() << "\n\n";
 
 	while (true)
 	{

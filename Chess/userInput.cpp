@@ -1,38 +1,59 @@
 #include "userInput.h"
 
-std::pair<Position, Position> UserInput::inputMove(const BoardState& board, const Color playerColor) const
+using enum MoveType;
+using enum Color;
+using enum Type;
+
+Move UserInput::inputMoves(const BoardState& board, const Color& playerColor) const
 {
-	return { inputInitialCase(board, playerColor), inputTargetCase(board, playerColor) };
+	std::string firstChoice{ setUserInput(board, playerColor, ValidationMode::InitialSquare) };
+
+	if (isCastlingMove(firstChoice))
+		return getCastlingMove(firstChoice, playerColor, board);
+
+	std::string secondChoice{ setUserInput(board, playerColor, ValidationMode::TargetSquare) };
+
+	Position from{ inputToPosition(firstChoice) };
+	Position to{ inputToPosition(secondChoice) };
+
+	Type fromType{ board.getPieceTypeAt(from) };
+	Type toType{ board.getPieceTypeAt(to) };
+
+	return { fromType, toType, from, to, normal };
 }
 
-Position UserInput::inputInitialCase(const BoardState& board, const Color playerColor) const
+std::string UserInput::setUserInput(const BoardState& board, const Color playerColor, ValidationMode mode) const
 {
 	std::string choice{};
+
 	while (true)
 	{
-		std::cout << "Select the piece you want to play: ";
+		switch (mode)
+		{
+		case ValidationMode::InitialSquare:
+			std::cout << "Select a piece of yours: ";
+			break;
+		case ValidationMode::TargetSquare:
+			std::cout << "Target square: ";
+			break;
+		}
+
 		std::cin >> choice;
 
-		if (isChoiceValid(choice, board, playerColor, ValidationMode::InitialPiece))
-			break;
+		if (isChoiceValid(choice, board, playerColor, mode))
+			return choice;
 	}
-
-	return choiceToCoord.find(choice)->second;
 }
 
-Position UserInput::inputTargetCase(const BoardState& board, const Color playerColor) const
+Move UserInput::getCastlingMove(std::string_view input, Color playerColor, const BoardState& board) const
 {
-	std::string choice{};
-	while (true)
-	{
-		std::cout << "Select the target case: ";
-		std::cin >> choice;
+	size_t y_rook{ playerColor == white ? 7 : 0 };
+	size_t x_rook{ input == "oq" ? 0 : 7 };
 
-		if (isChoiceValid(choice, board, playerColor, ValidationMode::TargetPiece))
-			break;
-	}
+	Position rookPosition{ y_rook, x_rook }; 
+	Position kingPosition{ board.getKingPosition(playerColor) };
 
-	return Position{ choiceToCoord.find(choice)->second };
+	return { rook, king, rookPosition, kingPosition, castling };
 }
 
 bool UserInput::isChoiceValid(const std::string& choice, const BoardState& board, Color playerColor, ValidationMode mode) const
@@ -75,7 +96,7 @@ bool UserInput::isChoiceValid(const std::string& choice, const BoardState& board
 
 	switch (mode)
 	{
-	case ValidationMode::InitialPiece:
+	case ValidationMode::InitialSquare:
 
 		if (!board.isPieceOfColor(pos, playerColor))
 		{
@@ -94,7 +115,7 @@ bool UserInput::isChoiceValid(const std::string& choice, const BoardState& board
 		}
 		break;
 
-	case ValidationMode::TargetPiece:
+	case ValidationMode::TargetSquare:
 
 		if (!board.isEmpty(pos) && board.isPieceOfColor(pos, playerColor))
 		{
@@ -114,3 +135,7 @@ bool UserInput::isChoiceValid(const std::string& choice, const BoardState& board
 	}
 	return true;
 }
+
+Position UserInput::inputToPosition(const std::string& input) const { return choiceToCoord.find(input)->second; }
+
+bool UserInput::isCastlingMove(std::string_view choice) const { return choice == "oq" || choice == "oo"; }

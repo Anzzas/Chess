@@ -3,8 +3,6 @@
 #include "piece.h"
 #include "case.h"
 
-class Board;
-
 class Pawn : public Piece
 {
 public:
@@ -16,6 +14,7 @@ public:
 	void setHasMovedTwoSquares(bool state) const;
 	const bool& hasUsedEnPassant() const;
 	void setHasUsedEnPassant(bool state) const;
+	bool isEnPassant(const BoardState& board, const Position& from, const Position& to) const;
 
 protected:
 

@@ -514,3 +514,82 @@ bool Board::isPieceOfColor(Position pos, Color color) const
 {
 	return getPieceAt(pos)->getColor() == color;
 }
+
+const Type& Board::getPieceTypeAt(Position pos) const
+{
+	return getPieceAt(pos)->getType();
+}
+
+const Color& Board::getPieceColorAt(Position pos) const
+{
+	return getPieceAt(pos)->getColor();
+}
+
+bool Board::isSquareUnderAttackAt(Position pos, Color attackerColor) const
+{
+	for (size_t attackerY{}; attackerY < boardSettings::boardSize; attackerY++)
+	{
+		for (size_t attackerX{}; attackerX < boardSettings::boardSize; attackerX++)
+		{
+			Position attackerPos{ attackerY, attackerX };
+			bool isEnemyPiece{ !isEmpty(attackerPos) && getPieceColorAt(attackerPos) == attackerColor };
+			bool canMoveToPos{ getPieceAt(attackerPos)->canMoveTo(*this, {attackerY, attackerX}, {pos.getY(), pos.getX()}) };
+
+			if (isEnemyPiece && canMoveToPos)
+				return true;
+		}
+	}
+	return false;
+}
+
+std::vector<Position> Board::getSquaresBetween(const Position& from, const Position& to) const
+{
+	std::vector<Position> squares;
+
+	int y1 = from.getY();
+	int x1 = from.getX();
+	int y2 = to.getY();
+	int x2 = to.getX();
+
+	// Calculer les différences
+	int dy = y2 - y1;
+	int dx = x2 - x1;
+
+	// Vérifier si les positions forment une ligne valide
+	bool isHorizontal = (dy == 0 && dx != 0);
+	bool isVertical = (dx == 0 && dy != 0);
+	bool isDiagonal = (std::abs(dx) == std::abs(dy) && dx != 0 && dy != 0);
+
+	if (!isHorizontal && !isVertical && !isDiagonal)
+		return squares;
+
+	// Déterminer la direction du mouvement
+	int stepY{};
+	int stepX{};
+
+	if (dy > 0)
+		stepY = 1; // Vers le bas
+
+	else if (dy < 0)
+		stepY = -1; // Vers le haut
+
+	if (dx > 0)
+		stepX = 1; // Vers la droite
+
+	else if (dx < 0) 
+		stepX = -1;  // Vers la gauche
+
+	// Commencer par la première case après la position de départ
+	int y{ y1 + stepY };
+	int x{ x1 + stepX };
+
+	// Générer toutes les positions intermédiaires
+	while (y != y2 || x != x2) 
+	{
+		squares.emplace_back(Position(y, x));
+		y += stepY;
+		x += stepX;
+	}
+
+	return squares;
+}

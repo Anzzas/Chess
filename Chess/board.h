@@ -9,6 +9,7 @@
 #include <optional>
 
 using Point2D = std::array<std::array<Case, boardSettings::boardSize>, boardSettings::boardSize>;
+using enum Color;
 
 class Board : public BoardState
 {
@@ -67,6 +68,10 @@ public:
 	bool isPositionUnderAttack(Position pos, Color attackerColor) const override;
 	const Position& getKingPosition(Color color) const override;
 	bool isPieceOfColor(Position pos, Color color) const override;
+	const Type& getPieceTypeAt(Position pos) const override;
+	const Color& getPieceColorAt(Position pos) const override;
+	bool isSquareUnderAttackAt(Position pos, Color attacker) const override;
+	std::vector<Position> getSquaresBetween(const Position& from, const Position& to) const override;
 
 	void removePieceAt(Position pos);
 	void placePieceAt(Position from, Position to);

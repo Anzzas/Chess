@@ -2,6 +2,7 @@
 #define USERINPUT_H
 #include "position.h"
 #include "boardState.h"
+#include "move.h"
 #include <iostream>
 
 inline std::map<std::string, Position> choiceToCoord = []()
@@ -26,11 +27,9 @@ inline std::map<std::string, Position> choiceToCoord = []()
 
 enum class ValidationMode
 {
-	InitialPiece,
-	TargetPiece
+	InitialSquare,
+	TargetSquare
 };
-
-inline bool g_isCastling{};
 
 class UserInput
 {
@@ -38,13 +37,15 @@ public:
 
 	UserInput() = default;
 
-	std::pair<Position, Position> inputMove(const BoardState& board, const Color playerColor) const;
+	Move inputMoves(const BoardState& board, const Color& playerColor) const;
 
 private:
 
-	Position inputInitialCase(const BoardState& board, const Color playerColor) const;
-	Position inputTargetCase(const BoardState& board, const Color playerColor) const;
+	std::string setUserInput(const BoardState& board, const Color playerColor, ValidationMode mode) const;
 	bool isChoiceValid(const std::string& choice, const BoardState& board, Color playerColor, ValidationMode mode) const;
+	bool isCastlingMove(std::string_view choice) const;
+	Position inputToPosition(const std::string& input) const;
+	Move getCastlingMove(std::string_view input, Color playerColor, const BoardState& board) const;
 };
 
 #endif

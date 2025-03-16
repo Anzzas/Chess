@@ -1,8 +1,50 @@
 #include "moveValidator.h"
 
-bool MoveValidator::isValidMove(const BoardState& board, const Move& move) const
+using enum Color;
+using enum Type;
+using enum MoveType;
+
+bool MoveValidator::isValidMove(const BoardState& board, const Move& move, Color playerColor) const
 {
-	if (move.getFrom().isValid() && move.getTo().isValid())
+	switch (move.getMoveType())
+	{
+	case MoveType::normal: return validateNormalMove(board, move, playerColor);
+	case MoveType::castling: return validateCastlingMove(board, move, playerColor);
+	case MoveType::promotion: return validatePromotionMove(board, move, playerColor);
+	case MoveType::enPassant: return validateEnPassantMove(board, move, playerColor);
+	}
+
+	return false;
+}
+
+MoveType MoveValidator::determineMoveType(const BoardState& board, const Move& move, Color playerColor) const
+{
+	if (isPromotionMove(board, move, playerColor))
+		return promotion;
+
+	else if (isEnPassantMove(board, move, playerColor))
+		return enPassant;
+
+	return normal;
+}
+
+bool MoveValidator::isPromotionMove(const BoardState& board, const Move& move, Color playerColor) const
+{
+	size_t PromotionY{ playerColor == white ? 0 : 7 };
+	Type fromPieceType{ board.getPieceTypeAt(move.getFrom()) };
+
+	if (fromPieceType == pawn && move.getTo().getY() == PromotionY)
+		return true;
+
+	return false;
+}
+
+bool MoveValidator::isEnPassantMove(const BoardState& board, const Move& move, Color playerColor) const
+{
+	if (board.getPieceTypeAt(move.getFrom()) != pawn)
+		return false;
+
+	if (dynamic_cast<const Pawn*>(board.getPieceAt(move.getFrom()))->isEnPassant(board, move.getFrom(), move.getTo()))
 		return true;
 
 	return false;
@@ -50,4 +92,57 @@ bool MoveValidator::wouldLeaveKingInCheck(const BoardState& board, Position from
 	m_board[targetCaseY][targetCaseX].getCase() = std::move(tempTargetCase);
 
 	return true; // If that move put the player himself in check, make the player try again
+}
+
+bool MoveValidator::validateNormalMove(const BoardState& board, const Move& move, Color playerColor) const
+{
+	const Piece* fromPiece{ board.getPieceAt(move.getFrom()) };
+
+	return fromPiece->canMoveTo(board, move.getFrom(), move.getTo());
+}
+
+bool MoveValidator::validateCastlingMove(const BoardState& board, const Move& move, Color playerColor) const
+{	 
+	const size_t y(playerColor == white ? 7 : 0);
+	const Position& rookPosition{ move.getFrom() };
+	const Position& kingPosition{ move.getTo() };
+
+	const auto* const king{ dynamic_cast<const King*>(board.getPieceAt(kingPosition)) };
+	const auto* const rook{ dynamic_cast<const Rook*>(board.getPieceAt(rookPosition)) };
+
+	if (!king || king->getHasMoved() || !rook || rook->getHasMoved())
+		return false;
+
+	std::vector<Position> inBetweenSquares{ board.getSquaresBetween(kingPosition, rookPosition) };
+
+	for (const auto& square : inBetweenSquares)
+	{
+		if (!board.isEmpty(square) || board.isPositionUnderAttack(square, playerColor == white ? black : white))
+			return false;
+	}
+
+	return true;
+}	 
+	 
+bool MoveValidator::validateEnPassantMove(const BoardState& board, const Move& move, Color playerColor) const
+{	 
+	if (move.getFromType() != pawn)
+		return false;
+
+	const Pawn* pawn{ dynamic_cast<const Pawn*>(board.getPieceAt(move.getFrom())) };
+	
+	if(pawn->isEnPassant(board, move.getFrom(), move.getTo()))
+		return true;
+
+	return false;
+}	 
+	 
+bool MoveValidator::validatePromotionMove(const BoardState& board, const Move& move, Color playerColor) const
+{
+	size_t promotionY{ playerColor == white ? 0 : 7 };
+
+	if (move.getFromType() == pawn && move.getTo().getY() == promotionY)
+		return true;
+
+	return false;
 }
