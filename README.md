@@ -25,7 +25,7 @@ Second selection: e5
 #### Castling
 To castle, enter one of these special commands as your first selection:
 
-oo - Castle kingside (short castling)
+oo - Castle kingside (short castling) /
 oq - Castle queenside (long castling)
 
 Example:
